@@ -11,7 +11,7 @@ import { MapPin, Mail, Phone, MessageCircle, Send, CheckCircle, AlertCircle, Arr
 // 3. Deploy as a Web App (Execute as: Me, Who has access: Anyone)
 // 4. Copy the Web App URL and paste it below ↓
 // ─────────────────────────────────────────────────────────────
-const GOOGLE_SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE'
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyzrIdJyF70WlhpcYOy95CN-marRmnBxr83MqwcjpXyIpukFf_OdD4j8BllzZubQJye5g/exec'
 
 function Reveal({ children, delay = 0, className = '' }: {
   children: React.ReactNode; delay?: number; className?: string
