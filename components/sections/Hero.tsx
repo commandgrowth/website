@@ -34,12 +34,12 @@ function Counter({ to, suffix = '', duration = 2 }: { to: number; suffix?: strin
 }
 
 // ── Word-by-word animated heading ───────────────────────────────────────────
-function AnimatedHeading({ children, className = '', delay = 0 }: {
-  children: string; className?: string; delay?: number
+function AnimatedHeading({ children, className = '', delay = 0, style }: {
+  children: string; className?: string; delay?: number; style?: React.CSSProperties
 }) {
   const words = children.split(' ')
   return (
-    <span className={className} style={{ display: 'block' }}>
+    <span className={className} style={{ display: 'block', ...style }}>
       {words.map((word, i) => (
         <motion.span
           key={i}
