@@ -73,14 +73,15 @@ function GlobalEffects() {
       speed: number; opacity: number; drift: number
     }
 
-    const particles: Particle[] = Array.from({ length: 100 }, () => ({
+    const particles: Particle[] = Array.from({ length: 160 }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      size: Math.random() * 1.4 + 0.3,
-      speed: Math.random() * 0.25 + 0.08,
-      opacity: Math.random() * 0.35 + 0.05,
-      drift: Math.random() * 0.4 - 0.2,
+      size: Math.random() * 2.2 + 0.5,
+      speed: Math.random() * 0.5 + 0.15,
+      opacity: Math.random() * 0.55 + 0.2,
+      drift: Math.random() * 0.6 - 0.3,
     }))
+    
 
     const tick = () => {
       ctx.clearRect(0, 0, W, H)
@@ -94,7 +95,11 @@ function GlobalEffects() {
         }
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(212,175,55,${p.opacity})`
+        const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2.5)
+        grd.addColorStop(0, `rgba(212,175,55,${p.opacity})`)
+        grd.addColorStop(1, `rgba(212,175,55,0)`)
+        ctx.fillStyle = grd
+        ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2)
         ctx.fill()
       })
       requestAnimationFrame(tick)
