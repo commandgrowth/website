@@ -283,3 +283,44 @@ body {
 
 /* ── Cursor override ────────────────────────────── */
 a, button, [data-cursor], input, textarea, select { cursor: none !important; }
+
+
+/* ── Loader ─────────────────────────────────────── */
+#cg-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #050d1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+
+#cg-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#cg-loader-bar {
+  width: 140px;
+  height: 1px;
+  background: rgba(212, 175, 55, 0.15);
+  border-radius: 1px;
+  overflow: hidden;
+  position: relative;
+}
+
+#cg-loader-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #D4AF37, #f0d060);
+  animation: loaderFill 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes loaderFill {
+  to { width: 100%; }
+}
