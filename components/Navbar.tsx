@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'
-import { Menu, X, TrendingUp } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 const navLinks = [
   { href: '/',         label: 'Home'     },
@@ -49,7 +50,7 @@ export default function Navbar() {
     <>
       <motion.header
         initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0,    opacity: 1 }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled ? 'glass border-b border-gold-500/10 shadow-glass' : 'bg-transparent'
@@ -58,28 +59,26 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
 
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group" data-cursor>
-              <div className="relative w-9 h-9">
-                <div className="absolute inset-0 rounded-xl"
-                  style={{ background: 'linear-gradient(135deg, #D4AF37, #b8952e)' }}>
-                  <TrendingUp className="w-5 h-5 text-navy-900 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <motion.div
-                  className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ boxShadow: '0 0 22px rgba(212,175,55,0.7)' }}
+            {/* ── Logo — uses the real Logo.png ── */}
+            <Link href="/" className="flex items-center group" data-cursor>
+              <div className="relative overflow-hidden">
+                <Image
+                  src="/Logo.png"
+                  alt="CommandGrowth"
+                  width={160}
+                  height={60}
+                  className="object-contain h-12 w-auto transition-all duration-500 group-hover:scale-105"
+                  priority
                 />
-              </div>
-              <div>
-                <span className="font-display text-xl font-bold tracking-tight">
-                  <span className="text-gold-500">Command</span>
-                  <span className="text-white">Growth</span>
-                </span>
-                <p className="text-[10px] tracking-[0.25em] text-white/30 uppercase -mt-0.5 font-body">See Cine</p>
+                {/* Subtle glow on hover */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none rounded-lg"
+                  style={{ boxShadow: 'inset 0 0 24px rgba(212,175,55,0.15)' }}
+                />
               </div>
             </Link>
 
-            {/* Desktop nav */}
+            {/* ── Desktop nav ── */}
             <nav className="hidden md:flex items-center gap-8">
               {navLinks.map(link => (
                 <Link key={link.href} href={link.href} data-cursor
@@ -89,17 +88,22 @@ export default function Navbar() {
                 >
                   {link.label}
                   {pathname === link.href && (
-                    <motion.span layoutId="nav-indicator" className="absolute -bottom-1 left-0 right-0 h-px"
-                      style={{ background: 'linear-gradient(90deg, #D4AF37, #f0d060)' }} />
+                    <motion.span
+                      layoutId="nav-indicator"
+                      className="absolute -bottom-1 left-0 right-0 h-px"
+                      style={{ background: 'linear-gradient(90deg, #D4AF37, #f0d060)' }}
+                    />
                   )}
                 </Link>
               ))}
             </nav>
 
-            {/* CTA */}
+            {/* ── CTA ── */}
             <div className="hidden md:block">
               <MagneticBtn>
-                <Link href="/contact" data-cursor
+                <Link
+                  href="/contact"
+                  data-cursor
                   className="relative btn-shimmer px-6 py-2.5 text-sm font-bold font-body tracking-wide overflow-hidden group block"
                   style={{
                     background: 'linear-gradient(135deg, #D4AF37, #b8952e)',
@@ -107,22 +111,27 @@ export default function Navbar() {
                   }}
                 >
                   <span className="relative z-10 text-navy-900">Get Started</span>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: 'linear-gradient(135deg, #f0d060, #D4AF37)' }} />
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ background: 'linear-gradient(135deg, #f0d060, #D4AF37)' }}
+                  />
                 </Link>
               </MagneticBtn>
             </div>
 
-            {/* Mobile toggle */}
-            <button className="md:hidden text-white/70 hover:text-gold-400 transition-colors" data-cursor
-              onClick={() => setMobileOpen(!mobileOpen)}>
+            {/* ── Mobile toggle ── */}
+            <button
+              className="md:hidden text-white/70 hover:text-gold-400 transition-colors"
+              data-cursor
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </motion.header>
 
-      {/* Mobile menu */}
+      {/* ── Mobile menu ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -132,22 +141,54 @@ export default function Navbar() {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-40 glass flex flex-col justify-center items-center gap-8"
           >
+            {/* Logo in mobile menu too */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mb-4"
+            >
+              <Image
+                src="/Logo.png"
+                alt="CommandGrowth"
+                width={140}
+                height={52}
+                className="object-contain h-14 w-auto"
+              />
+            </motion.div>
+
             {navLinks.map((link, i) => (
-              <motion.div key={link.href}
+              <motion.div
+                key={link.href}
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
+                transition={{ delay: i * 0.08 + 0.15 }}
               >
-                <Link href={link.href} onClick={() => setMobileOpen(false)} data-cursor
+                <Link
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  data-cursor
                   className={`text-4xl font-display font-bold ${
                     pathname === link.href ? 'gold-text' : 'text-white/80'
-                  }`}>{link.label}</Link>
+                  }`}
+                >
+                  {link.label}
+                </Link>
               </motion.div>
             ))}
-            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
-              <Link href="/contact" onClick={() => setMobileOpen(false)} data-cursor
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+            >
+              <Link
+                href="/contact"
+                onClick={() => setMobileOpen(false)}
+                data-cursor
                 className="btn-shimmer px-10 py-3 font-bold font-body text-navy-900 text-lg inline-block"
-                style={{ background: 'linear-gradient(135deg, #D4AF37, #b8952e)' }}>
+                style={{ background: 'linear-gradient(135deg, #D4AF37, #b8952e)' }}
+              >
                 Get Started
               </Link>
             </motion.div>

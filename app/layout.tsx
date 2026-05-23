@@ -16,7 +16,7 @@ function GlobalEffects() {
   useEffect(() => {
     // ── Loader ──
     const loader = loaderRef.current
-    if (loader) setTimeout(() => loader.classList.add('hidden'), 1600)
+    if (loader) setTimeout(() => loader.classList.add('hidden'), 1800)
 
     // ── Cursor ──
     const cursor = cursorRef.current
@@ -60,8 +60,8 @@ function GlobalEffects() {
 
     interface P { x: number; y: number; size: number; speed: number; opacity: number; drift: number }
     const particles: P[] = Array.from({ length: 160 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
+      x:       Math.random() * window.innerWidth,
+      y:       Math.random() * window.innerHeight,
       size:    Math.random() * 2.2 + 0.5,
       speed:   Math.random() * 0.5 + 0.15,
       opacity: Math.random() * 0.55 + 0.2,
@@ -87,7 +87,9 @@ function GlobalEffects() {
 
     // ── Scroll reveal ──
     const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target) } })
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target) }
+      })
     }, { threshold: 0.1, rootMargin: '-40px' })
     const wire = () => document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => io.observe(el))
     wire()
@@ -103,30 +105,39 @@ function GlobalEffects() {
 
   return (
     <>
-      {/* IMPL 4: Logo loader
-          ─ Replace the text logo below with an <img> tag pointing to your logo once you upload it.
-          ─ Example: <img src="/logo.png" alt="CommandGrowth" className="w-32" />
-          ─ Place your logo file in the /public folder of your project.
-      */}
+      {/* ── LOADER with real logo ── */}
       <div id="cg-loader" ref={loaderRef}>
-        {/* ── Swap this block with your logo image ── */}
-        <div id="cg-loader-logo">
-          <span>Command</span><span>Growth</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+          {/* Logo image — pulled from /public/Logo.png */}
+          <img
+            src="/Logo.png"
+            alt="CommandGrowth"
+            style={{
+              width: '180px',
+              height: 'auto',
+              opacity: 0,
+              animation: 'loaderLogoFade 0.7s ease 0.1s forwards',
+            }}
+          />
+          {/* Progress bar */}
+          <div id="cg-loader-bar" />
+          <p style={{
+            fontFamily: 'var(--font-outfit, sans-serif)',
+            fontSize: '10px',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: 'rgba(212,175,55,0.4)',
+          }}>
+            Based in Nagpur · Built for India
+          </p>
         </div>
-        {/* ─────────────────────────────────────────── */}
-        <div id="cg-loader-bar" />
-        <p style={{
-          fontFamily: 'var(--font-outfit)',
-          fontSize: '10px',
-          letterSpacing: '0.3em',
-          textTransform: 'uppercase',
-          color: 'rgba(212,175,55,0.4)',
-          marginTop: '4px',
-        }}>Based in Nagpur · Built for India</p>
       </div>
 
       <div className="grain" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 99990 }} />
-      <canvas id="cg-particles" ref={canvasRef} style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1 }} />
+      <canvas
+        id="cg-particles" ref={canvasRef}
+        style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1 }}
+      />
       <div id="cg-cursor"      ref={cursorRef} />
       <div id="cg-cursor-ring" ref={ringRef}   />
     </>
@@ -142,16 +153,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <style>{`
+          @keyframes loaderLogoFade {
+            from { opacity: 0; transform: translateY(12px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0)   scale(1);    }
+          }
+        `}</style>
       </head>
       <body className="bg-navy-900 text-white antialiased" style={{ fontFamily: "'Outfit', sans-serif" }}>
         <GlobalEffects />
 
+        {/* Global ambient glow */}
         <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full opacity-[0.055]"
-            style={{ background: 'radial-gradient(ellipse, #D4AF37 0%, transparent 70%)' }} />
-          <div className="absolute bottom-0 right-0 w-[600px] h-[300px] rounded-full opacity-[0.03]"
-            style={{ background: 'radial-gradient(ellipse, #D4AF37 0%, transparent 70%)' }} />
+          <div
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full opacity-[0.055]"
+            style={{ background: 'radial-gradient(ellipse, #D4AF37 0%, transparent 70%)' }}
+          />
+          <div
+            className="absolute bottom-0 right-0 w-[600px] h-[300px] rounded-full opacity-[0.03]"
+            style={{ background: 'radial-gradient(ellipse, #D4AF37 0%, transparent 70%)' }}
+          />
         </div>
 
         <Navbar />
