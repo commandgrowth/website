@@ -8,7 +8,6 @@ import Footer from '@/components/Footer'
 function GlobalEffects() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const ringRef   = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const loaderRef = useRef<HTMLDivElement>(null)
   const mouse     = useRef({ x: 0, y: 0 })
   const ring      = useRef({ x: 0, y: 0 })
@@ -32,8 +31,8 @@ function GlobalEffects() {
 
     let rafId: number
     const animRing = () => {
-      ring.current.x += (mouse.current.x - ring.current.x) * 0.11
-      ring.current.y += (mouse.current.y - ring.current.y) * 0.11
+      ring.current.x += (mouse.current.x - ring.current.x) * 0.1
+      ring.current.y += (mouse.current.y - ring.current.y) * 0.1
       ringEl.style.left = ring.current.x + 'px'
       ringEl.style.top  = ring.current.y + 'px'
       rafId = requestAnimationFrame(animRing)
@@ -47,57 +46,26 @@ function GlobalEffects() {
       })
     }
     addHover()
-
-    // ── Particle canvas ──
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')!
-    let W = 0, H = 0
-
-    const resize = () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight }
-    resize()
-    window.addEventListener('resize', resize)
-
-    interface P { x: number; y: number; size: number; speed: number; opacity: number; drift: number }
-    const particles: P[] = Array.from({ length: 160 }, () => ({
-      x:       Math.random() * window.innerWidth,
-      y:       Math.random() * window.innerHeight,
-      size:    Math.random() * 2.2 + 0.5,
-      speed:   Math.random() * 0.5 + 0.15,
-      opacity: Math.random() * 0.55 + 0.2,
-      drift:   Math.random() * 0.6 - 0.3,
-    }))
-
-    const tick = () => {
-      ctx.clearRect(0, 0, W, H)
-      particles.forEach(p => {
-        p.y -= p.speed; p.x += p.drift
-        if (p.y < -4 || p.x < -4 || p.x > W + 4) { p.x = Math.random() * W; p.y = H + 4 }
-        const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2.5)
-        grd.addColorStop(0, `rgba(212,175,55,${p.opacity})`)
-        grd.addColorStop(1, `rgba(212,175,55,0)`)
-        ctx.beginPath()
-        ctx.fillStyle = grd
-        ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2)
-        ctx.fill()
-      })
-      requestAnimationFrame(tick)
-    }
-    tick()
+    const rewire = setInterval(addHover, 1000); setTimeout(() => clearInterval(rewire), 6000)
 
     // ── Scroll reveal ──
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target) }
+        if (e.isIntersecting) {
+          const el = e.target as HTMLElement
+          const delay = parseFloat(el.dataset.delay || '0')
+          setTimeout(() => el.classList.add('visible'), delay * 1000)
+          io.unobserve(el)
+        }
       })
-    }, { threshold: 0.1, rootMargin: '-40px' })
+    }, { threshold: 0.07, rootMargin: '-20px' })
+
     const wire = () => document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => io.observe(el))
     wire()
-    const t = setInterval(wire, 800); setTimeout(() => clearInterval(t), 5000)
+    const t = setInterval(wire, 1000); setTimeout(() => clearInterval(t), 6000)
 
     return () => {
       document.removeEventListener('mousemove', onMove)
-      window.removeEventListener('resize', resize)
       cancelAnimationFrame(rafId)
       io.disconnect()
     }
@@ -105,39 +73,16 @@ function GlobalEffects() {
 
   return (
     <>
-      {/* ── LOADER with real logo ── */}
       <div id="cg-loader" ref={loaderRef}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-          {/* Logo image — pulled from /public/Logo.png */}
-          <img
-            src="/Logo.png"
-            alt="CommandGrowth"
-            style={{
-              width: '180px',
-              height: 'auto',
-              opacity: 0,
-              animation: 'loaderLogoFade 0.7s ease 0.1s forwards',
-            }}
-          />
-          {/* Progress bar */}
-          <div id="cg-loader-bar" />
-          <p style={{
-            fontFamily: 'var(--font-outfit, sans-serif)',
-            fontSize: '10px',
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            color: 'rgba(212,175,55,0.4)',
-          }}>
-            Based in Nagpur · Built for India
-          </p>
-        </div>
+        <img src="/Logo.png" alt="CommandGrowth"
+          style={{ width: 160, height: 'auto', opacity: 0,
+            animation: 'logoFadeIn 0.7s ease 0.2s forwards' }} />
+        <div id="cg-loader-bar" />
+        <div id="cg-loader-sub">Based in Nagpur · Real Estate Growth Systems</div>
+        <style>{`@keyframes logoFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}`}</style>
       </div>
 
-      <div className="grain" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 99990 }} />
-      <canvas
-        id="cg-particles" ref={canvasRef}
-        style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1 }}
-      />
+      <div id="grain" />
       <div id="cg-cursor"      ref={cursorRef} />
       <div id="cg-cursor-ring" ref={ringRef}   />
     </>
@@ -146,41 +91,19 @@ function GlobalEffects() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
-        <title>CommandGrowth — Premier Digital Growth Agency</title>
-        <meta name="description" content="We engineer digital dominance for local Indian brands. Local SEO, WhatsApp Automation, Reels Marketing and Influencer Tie-ups — built in Nagpur, scaled across India." />
+        <title>CommandGrowth — Real Estate Lead Generation & Growth Systems | Nagpur</title>
+        <meta name="description" content="AI-powered lead generation, WhatsApp automation, and CRM systems exclusively for real estate developers and plotting companies across India." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <style>{`
-          @keyframes loaderLogoFade {
-            from { opacity: 0; transform: translateY(12px) scale(0.96); }
-            to   { opacity: 1; transform: translateY(0)   scale(1);    }
-          }
-        `}</style>
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
       </head>
-      <body className="bg-navy-900 text-white antialiased" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      <body>
         <GlobalEffects />
-
-        {/* Global ambient glow */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full opacity-[0.055]"
-            style={{ background: 'radial-gradient(ellipse, #D4AF37 0%, transparent 70%)' }}
-          />
-          <div
-            className="absolute bottom-0 right-0 w-[600px] h-[300px] rounded-full opacity-[0.03]"
-            style={{ background: 'radial-gradient(ellipse, #D4AF37 0%, transparent 70%)' }}
-          />
-        </div>
-
         <Navbar />
-        <main className="relative z-10 page-enter">{children}</main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

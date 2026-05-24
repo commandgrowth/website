@@ -1,591 +1,298 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
-  ArrowRight, CheckCircle, AlertCircle, ChevronDown,
-  MessageCircle, Target, BarChart3, Zap, Users,
-  TrendingUp, Clock, Phone, MapPin, Star
+  ArrowRight, CheckCircle, ChevronDown, MessageCircle,
+  Target, BarChart3, Zap, Clock, MapPin, Building2,
+  TrendingUp, Users, Phone, Star, AlertTriangle
 } from 'lucide-react'
 
-/* ─── Reveal helper ─────────────────────────────────────── */
-function Reveal({ children, delay = 0, className = '', direction = 'up' }: {
-  children: React.ReactNode; delay?: number; className?: string
-  direction?: 'up' | 'left' | 'right'
+/* ── Reveal wrapper ─────────────────────────────────────── */
+function R({ children, d = 0, dir = 'up', className = '' }: {
+  children: React.ReactNode; d?: number; dir?: 'up'|'left'|'right'; className?: string
 }) {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
-  const initial =
-    direction === 'left' ? { opacity: 0, x: -48 } :
-    direction === 'right' ? { opacity: 0, x: 48 } :
-    { opacity: 0, y: 48 }
+  const inView = useInView(ref, { once: true, margin: '-50px' })
+  const init = dir === 'left' ? { opacity: 0, x: -40 } : dir === 'right' ? { opacity: 0, x: 40 } : { opacity: 0, y: 40 }
   return (
-    <motion.div ref={ref} initial={initial}
+    <motion.div ref={ref} initial={init}
       animate={inView ? { opacity: 1, x: 0, y: 0 } : {}}
-      transition={{ duration: 0.85, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.9, delay: d, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >{children}</motion.div>
   )
 }
 
-/* ─── Section eyebrow label ─────────────────────────────── */
-function Eyebrow({ children }: { children: React.ReactNode }) {
+/* ── Image placeholder component ───────────────────────── */
+function ImgBox({
+  label, aspectRatio = '4/3', dark = false, className = '', rounded = true,
+  overlay,
+}: {
+  label: string; aspectRatio?: string; dark?: boolean
+  className?: string; rounded?: boolean; overlay?: React.ReactNode
+}) {
   return (
-    <div className="inline-flex items-center gap-3 mb-5">
-      <div className="h-px w-8" style={{ background: 'linear-gradient(90deg, transparent, #D4AF37)' }} />
-      <span className="text-gold-400 text-xs font-body font-semibold tracking-[0.32em] uppercase">{children}</span>
-      <div className="h-px w-8" style={{ background: 'linear-gradient(90deg, #D4AF37, transparent)' }} />
+    <div
+      className={`relative overflow-hidden ${rounded ? 'rounded-2xl' : ''} ${dark ? 'img-placeholder-dark' : 'img-placeholder'} ${className}`}
+      style={{ aspectRatio }}
+      data-label={label}
+    >
+      {/* Inner architectural lines to suggest space */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.07]">
+        <div className="absolute inset-8 border" style={{ borderColor: dark ? 'rgba(212,175,55,0.4)' : 'rgba(7,18,42,0.25)' }} />
+        <div className="absolute inset-16 border" style={{ borderColor: dark ? 'rgba(212,175,55,0.25)' : 'rgba(7,18,42,0.15)' }} />
+        <Building2 className="w-16 h-16" style={{ color: dark ? 'rgba(212,175,55,0.3)' : 'rgba(7,18,42,0.2)' }} />
+      </div>
+      {overlay && <div className="absolute inset-0 z-10">{overlay}</div>}
     </div>
   )
 }
 
 /* ═══════════════════════════════════════════════════════════
-   1. HERO SECTION
+   1. HERO — Navy dark, ivory text, gold accents
+   Right side: property image placeholder with floating UI cards
 ═══════════════════════════════════════════════════════════ */
 function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: '#060810' }}>
-      {/* Dot grid */}
-      <div className="absolute inset-0 dot-grid opacity-30" />
+    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: 'var(--navy)' }}>
+      <div className="absolute inset-0 dot-grid-dark opacity-60" />
+      {/* Subtle top-left ambient */}
+      <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 65%)' }} />
+      {/* Bottom right ambient */}
+      <div className="absolute -bottom-20 right-0 w-[500px] h-[400px] pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 70%)' }} />
 
-      {/* Ambient glows */}
-      <motion.div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }}
-        animate={{ scale: [1, 1.08, 1], opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} />
-      <motion.div className="absolute bottom-0 right-1/4 w-[500px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)', filter: 'blur(60px)' }}
-        animate={{ scale: [1, 1.12, 1] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }} />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-28 pb-20 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
 
-      {/* Animated scan lines */}
-      {[0, 1, 2].map(i => (
-        <motion.div key={i} className="absolute h-px w-full pointer-events-none"
-          style={{ top: `${25 + i * 22}%`, background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.06) 50%, transparent)' }}
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 12 + i * 3, repeat: Infinity, ease: 'linear', delay: i * 2 }}
-        />
-      ))}
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-          {/* Left — copy */}
+          {/* Left — Copy */}
           <div>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 border border-gold-500/20"
-              style={{ background: 'rgba(212,175,55,0.06)' }}>
-              <div className="w-1.5 h-1.5 rounded-full bg-gold-400 animate-pulse" />
-              <span className="text-gold-400 text-xs font-body font-semibold tracking-[0.2em] uppercase">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-3 mb-10"
+              style={{ borderBottom: '1px solid rgba(212,175,55,0.25)', paddingBottom: 12 }}>
+              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--gold)' }} />
+              <span className="font-body text-xs font-medium tracking-[0.28em] uppercase"
+                style={{ color: 'rgba(212,175,55,0.8)' }}>
                 Real Estate Lead Generation · Nagpur & India
               </span>
             </motion.div>
 
-            <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display font-bold leading-[0.95] mb-6"
-              style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}>
-              <span className="block text-white">We Help Real Estate</span>
-              <span className="block text-white">Developers Generate</span>
-              <span className="block gold-text italic">Qualified Buyer Leads</span>
-              <span className="block text-white/60 font-normal text-[0.7em] mt-2">Using AI-Powered Funnels & Automation</span>
+            <motion.h1 initial={{ opacity: 0, y: 48 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="font-serif font-bold leading-[1.0] mb-8"
+              style={{ fontSize: 'clamp(42px, 5.5vw, 76px)', color: 'var(--ivory)' }}>
+              Generate More<br />
+              <em className="font-serif not-italic" style={{ color: 'var(--gold)' }}>Qualified Property</em><br />
+              Buyer Leads —<br />
+              <span className="font-light italic" style={{ color: 'rgba(248,246,242,0.55)', fontSize: '0.72em' }}>
+                Automatically.
+              </span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.45 }}
-              className="text-white/50 font-body text-lg leading-relaxed mb-10 max-w-lg">
-              Meta Ads → WhatsApp Automation → AI Follow-Up → CRM Pipeline → Site Visit Booking.
-              A complete growth system built exclusively for developers and plotting companies.
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="font-body text-lg leading-relaxed mb-10 max-w-lg"
+              style={{ color: 'rgba(248,246,242,0.55)' }}>
+              Meta Ads · WhatsApp Automation · CRM Pipeline · AI Follow-Up.
+              A complete lead generation and conversion system built exclusively
+              for developers and plotting companies.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.6 }}
-              className="flex flex-wrap gap-4 mb-12">
-              <Link href="/contact" data-cursor
-                className="inline-flex items-center gap-3 px-8 py-4 font-bold font-body text-sm text-navy-900 group shimmer"
-                style={{
-                  background: 'linear-gradient(135deg, #e8c84a 0%, #D4AF37 50%, #b8952e 100%)',
-                  clipPath: 'polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)',
-                  boxShadow: '0 0 40px rgba(212,175,55,0.3)',
-                }}>
-                Book Free Growth Audit
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-              <Link href="/services" data-cursor
-                className="inline-flex items-center gap-3 px-8 py-4 font-semibold font-body text-sm text-gold-400 border border-gold-500/30 hover:border-gold-500/60 transition-colors"
-                style={{ clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)' }}>
-                Get Lead Strategy
+              transition={{ duration: 0.7, delay: 0.55 }}
+              className="flex flex-wrap gap-4 mb-14">
+              <Link href="/contact" data-cursor className="btn-gold">
+                <span>Book Free Growth Audit</span>
                 <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link href="/services" data-cursor className="btn-outline-light">
+                <span>Get Lead Strategy</span>
               </Link>
             </motion.div>
 
-            {/* Trust bar */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-              className="flex flex-wrap gap-6 pt-6 border-t border-white/5">
+            {/* Trust stats */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }}
+              className="grid grid-cols-4 gap-6 pt-8"
+              style={{ borderTop: '1px solid rgba(212,175,55,0.12)' }}>
               {[
-                { val: '200+', label: 'Leads/Month' },
-                { val: '₹10Cr+', label: 'Ad Spend Managed' },
-                { val: '2 min', label: 'Avg. Response Time' },
-                { val: '47%', label: 'More Site Visits' },
-              ].map(({ val, label }) => (
-                <div key={label}>
-                  <div className="font-display text-2xl font-bold gold-text leading-none">{val}</div>
-                  <div className="text-white/30 text-xs font-body tracking-wide mt-1">{label}</div>
+                { v: '214+', l: 'Leads/Month' },
+                { v: '₹10Cr+', l: 'Ad Spend' },
+                { v: '2 min', l: 'Response Time' },
+                { v: '47%', l: 'More Site Visits' },
+              ].map(({ v, l }) => (
+                <div key={l}>
+                  <div className="font-serif font-bold text-2xl gold-text leading-none mb-1">{v}</div>
+                  <div className="font-body text-xs" style={{ color: 'rgba(248,246,242,0.3)' }}>{l}</div>
                 </div>
               ))}
             </motion.div>
           </div>
 
-          {/* Right — Property CRM mockup visual */}
-          <motion.div initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="hidden lg:block">
-            <PropertyDashboardMockup />
+          {/* Right — Property image + floating UI elements */}
+          <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden lg:block relative">
+
+            {/* Main property image placeholder */}
+            <ImgBox
+              label="Luxury residential project / township aerial view"
+              aspectRatio="4/5"
+              dark
+              className="w-full"
+              overlay={
+                <>
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 rounded-2xl"
+                    style={{ background: 'linear-gradient(180deg, transparent 50%, rgba(7,18,42,0.8) 100%)' }} />
+                  {/* Bottom project info */}
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <p className="font-body text-xs tracking-widest uppercase mb-1"
+                      style={{ color: 'rgba(212,175,55,0.7)' }}>Featured Project</p>
+                    <p className="font-serif text-xl font-semibold" style={{ color: 'var(--ivory)' }}>
+                      Premium Township Development
+                    </p>
+                  </div>
+                </>
+              }
+            />
+
+            {/* Floating: Live leads card */}
+            <motion.div
+              animate={{ y: [0, -6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -left-8 top-16 rounded-xl p-4 w-52"
+              style={{ background: '#fff', boxShadow: '0 12px 40px rgba(7,18,42,0.15)', border: '1px solid rgba(7,18,42,0.06)' }}>
+              <p className="font-body text-xs text-gray-400 mb-2 uppercase tracking-wider">Live Enquiries Today</p>
+              <p className="font-serif text-3xl font-bold" style={{ color: 'var(--navy)' }}>38</p>
+              <div className="flex items-center gap-1 mt-1">
+                <TrendingUp className="w-3 h-3 text-emerald-500" />
+                <span className="font-body text-xs text-emerald-600">+24% vs last week</span>
+              </div>
+            </motion.div>
+
+            {/* Floating: WhatsApp auto-reply */}
+            <motion.div
+              animate={{ y: [0, 8, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              className="absolute -right-6 top-1/3 rounded-xl p-4 w-56"
+              style={{ background: '#fff', boxShadow: '0 12px 40px rgba(7,18,42,0.15)', border: '1px solid rgba(7,18,42,0.06)' }}>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(37,211,102,0.1)' }}>
+                  <MessageCircle className="w-3.5 h-3.5" style={{ color: '#25D366' }} />
+                </div>
+                <div>
+                  <p className="font-body text-xs font-semibold" style={{ color: 'var(--charcoal)' }}>WhatsApp Reply</p>
+                  <p className="font-body text-xs" style={{ color: 'var(--text-soft)' }}>Sent in 28 seconds</p>
+                </div>
+              </div>
+              <p className="font-body text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                "Thank you for your interest! Our team will call you shortly..."
+              </p>
+            </motion.div>
+
+            {/* Floating: Site visits booked */}
+            <motion.div
+              animate={{ y: [0, -5, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+              className="absolute -left-4 bottom-20 rounded-xl p-4 w-48"
+              style={{ background: 'var(--gold)', boxShadow: '0 12px 40px rgba(212,175,55,0.3)' }}>
+              <p className="font-body text-xs font-medium mb-1" style={{ color: 'rgba(7,18,42,0.6)' }}>Site Visits Booked</p>
+              <p className="font-serif text-2xl font-bold" style={{ color: 'var(--navy)' }}>12 Today</p>
+              <p className="font-body text-xs mt-1" style={{ color: 'rgba(7,18,42,0.5)' }}>Auto-confirmed via WhatsApp</p>
+            </motion.div>
           </motion.div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Bottom scroll hint */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-5 h-8 rounded-full border border-gold-500/25 flex items-start justify-center p-1">
-          <div className="w-1 h-2 rounded-full bg-gold-400" />
+        <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}
+          className="w-5 h-8 rounded-full flex items-start justify-center p-1"
+          style={{ border: '1px solid rgba(212,175,55,0.25)' }}>
+          <div className="w-1 h-2 rounded-full" style={{ background: 'var(--gold)' }} />
         </motion.div>
       </motion.div>
     </section>
   )
 }
 
-/* Property dashboard mockup */
-function PropertyDashboardMockup() {
-  const leads = [
-    { name: 'Vikas Sharma', type: '3BHK · Plots', status: 'Hot', time: '2m ago' },
-    { name: 'Priya Rathod', type: '2BHK · Residential', status: 'Warm', time: '8m ago' },
-    { name: 'Amit Deshmukh', type: 'Plot · 1500sqft', status: 'Hot', time: '15m ago' },
-    { name: 'Sunita Patil', type: 'Villa · Township', status: 'New', time: '22m ago' },
-  ]
-  return (
-    <div className="relative rounded-2xl overflow-hidden border border-white/8"
-      style={{ background: 'linear-gradient(145deg, rgba(10,20,40,0.95), rgba(5,10,25,0.98))',
-        boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 60px rgba(212,175,55,0.06)' }}>
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500/60" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-          <div className="w-3 h-3 rounded-full bg-green-500/60" />
-        </div>
-        <div className="text-white/20 text-xs font-body">CommandGrowth CRM · Live</div>
-        <div className="flex items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-green-400 text-xs">Live</span>
-        </div>
-      </div>
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-px bg-white/5 mx-5 mt-4 rounded-xl overflow-hidden">
-        {[
-          { val: '214', label: 'Leads This Month', color: '#D4AF37' },
-          { val: '38', label: 'Site Visits Booked', color: '#4ade80' },
-          { val: '₹2.1L', label: 'Ad Spend', color: '#38bdf8' },
-        ].map(({ val, label, color }) => (
-          <div key={label} className="px-4 py-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
-            <div className="font-display text-xl font-bold" style={{ color }}>{val}</div>
-            <div className="text-white/30 text-xs font-body mt-0.5">{label}</div>
-          </div>
-        ))}
-      </div>
-      {/* Lead feed */}
-      <div className="px-5 pt-4 pb-2">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-white/40 text-xs font-body tracking-widest uppercase">Live Enquiries</span>
-          <span className="text-gold-400 text-xs font-body">WhatsApp Auto-Reply ✓</span>
-        </div>
-        <div className="space-y-2">
-          {leads.map((lead, i) => (
-            <motion.div key={lead.name}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 + i * 0.15 }}
-              className="flex items-center justify-between p-3 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center font-body font-bold text-xs"
-                  style={{ background: 'rgba(212,175,55,0.12)', color: '#D4AF37' }}>
-                  {lead.name.charAt(0)}
-                </div>
-                <div>
-                  <div className="text-white text-sm font-body font-semibold">{lead.name}</div>
-                  <div className="text-white/30 text-xs font-body">{lead.type}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-white/20 text-xs">{lead.time}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
-                  style={{
-                    background: lead.status === 'Hot' ? 'rgba(239,68,68,0.15)' :
-                                lead.status === 'Warm' ? 'rgba(251,146,60,0.15)' : 'rgba(74,222,128,0.12)',
-                    color: lead.status === 'Hot' ? '#f87171' :
-                           lead.status === 'Warm' ? '#fb923c' : '#4ade80',
-                  }}>
-                  {lead.status}
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-      {/* WhatsApp auto-reply strip */}
-      <div className="mx-5 mb-5 mt-3 p-3 rounded-xl flex items-center gap-3"
-        style={{ background: 'rgba(37,211,102,0.07)', border: '1px solid rgba(37,211,102,0.15)' }}>
-        <MessageCircle className="w-4 h-4 flex-shrink-0" style={{ color: '#25D366' }} />
-        <div>
-          <div className="text-white/70 text-xs font-body">
-            <span style={{ color: '#25D366' }}>Auto-replied</span> to Vikas Sharma in <strong className="text-white">28 seconds</strong>
-          </div>
-          <div className="text-white/25 text-xs font-body">"Thank you! Our team will call you shortly to discuss available plots..."</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 /* ═══════════════════════════════════════════════════════════
-   2. PAIN POINTS
+   2. PAIN POINTS — Ivory background, architectural feel
 ═══════════════════════════════════════════════════════════ */
 const pains = [
-  { icon: AlertCircle, title: 'Low-quality property enquiries', desc: 'Meta campaigns bring tire-kickers. Your sales team wastes hours chasing leads who can\'t afford your inventory.' },
-  { icon: Clock, title: 'Sales team responds hours late', desc: 'A buyer enquires at 2pm. Your team calls back at 6pm. They\'ve already visited a competitor\'s site.' },
-  { icon: MessageCircle, title: 'Leads getting lost on WhatsApp', desc: 'Hundreds of enquiries scattered across personal numbers. No system, no tracking, no follow-up. Pure chaos.' },
-  { icon: TrendingUp, title: 'High cost-per-lead from Meta Ads', desc: 'Spending ₹50,000/month and getting 200 enquiries — but only 3 site visits. Your CPL is bleeding you dry.' },
-  { icon: BarChart3, title: 'No visibility into your pipeline', desc: 'You don\'t know which ad, which project, which area is bringing the best buyers. Decisions made on gut, not data.' },
-  { icon: Users, title: 'Poor site visit conversion', desc: 'People show interest, say they\'ll visit, then ghost. No nurture system to bring them back and convert them.' },
+  { icon: Clock, title: 'Leads wait hours for a response', desc: 'A buyer enquires at 2pm. Your team responds at 6pm. They\'ve already visited a competitor\'s project and are ready to book.' },
+  { icon: AlertTriangle, title: 'Low-quality enquiries drain your team', desc: 'Meta campaigns bring tire-kickers and price-shoppers. Your sales team burns hours chasing leads who can never afford your inventory.' },
+  { icon: MessageCircle, title: 'Enquiries lost on WhatsApp', desc: 'Hundreds of leads scattered across personal numbers with no system, no tracking, no follow-up protocol. Pure revenue leakage.' },
+  { icon: BarChart3, title: 'High cost-per-lead, low site visits', desc: 'Spending ₹50,000/month and getting 3 site visits. The gap between enquiry and visit is where crores are quietly disappearing.' },
+  { icon: Target, title: 'No pipeline visibility', desc: 'You don\'t know which project, ad, or area drives the best buyers. Every campaign decision is gut-feel, not data.' },
+  { icon: Users, title: 'Leads go cold without nurture', desc: 'An interested buyer says they\'ll visit next weekend. No follow-up happens. 90 days later they\'ve bought from someone else.' },
 ]
 
 function PainSection() {
   return (
-    <section className="relative py-32 overflow-hidden" style={{ background: '#080c18' }}>
-      <div className="absolute inset-0 dot-grid opacity-20" />
-      <div className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(239,68,68,0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+    <section className="relative py-28 overflow-hidden" style={{ background: 'var(--ivory)' }}>
+      <div className="absolute inset-0 dot-grid-light opacity-60" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
-        <Reveal className="text-center mb-16">
-          <Eyebrow>Sound Familiar?</Eyebrow>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight">
-            The Problems Every<br />
-            <span className="gold-text italic">Developer Faces</span>
-          </h2>
-          <p className="text-white/40 font-body text-lg mt-4 max-w-xl mx-auto">
-            If any of these feel like your current reality, you're leaving crores on the table every month.
-          </p>
-        </Reveal>
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {pains.map((pain, i) => {
-            const Icon = pain.icon
-            return (
-              <Reveal key={pain.title} delay={i * 0.08}>
-                <div className="group relative p-7 rounded-2xl border border-white/5 overflow-hidden transition-all duration-500 hover:border-red-500/20"
-                  style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: 'radial-gradient(ellipse at 0% 0%, rgba(239,68,68,0.06) 0%, transparent 60%)' }} />
-                  <div className="relative z-10">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
-                      style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                      <Icon className="w-5 h-5 text-red-400" />
-                    </div>
-                    <h3 className="font-display text-lg font-bold text-white mb-3">{pain.title}</h3>
-                    <p className="text-white/40 font-body text-sm leading-relaxed">{pain.desc}</p>
-                  </div>
-                </div>
-              </Reveal>
-            )
-          })}
-        </div>
-
-        <Reveal delay={0.4} className="mt-12 text-center">
-          <p className="text-white/30 font-body text-base">
-            We've built a system that solves every single one of these. ↓
-          </p>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
-/* ═══════════════════════════════════════════════════════════
-   3. REAL ESTATE GROWTH SYSTEM
-═══════════════════════════════════════════════════════════ */
-const funnelSteps = [
-  { step: '01', label: 'Meta & Google Ads', sub: 'Hyper-targeted to active buyers', color: '#D4AF37' },
-  { step: '02', label: 'Landing Page', sub: 'Conversion-optimized project pages', color: '#f0a500' },
-  { step: '03', label: 'WhatsApp Automation', sub: 'Instant reply in under 2 minutes', color: '#25D366' },
-  { step: '04', label: 'AI Qualification', sub: 'Budget · Timeline · Location filters', color: '#38bdf8' },
-  { step: '05', label: 'CRM Pipeline', sub: 'Every lead tracked, scored, assigned', color: '#a78bfa' },
-  { step: '06', label: 'Site Visit Booking', sub: 'Automated scheduling & reminders', color: '#fb923c' },
-  { step: '07', label: 'Follow-Up System', sub: 'AI nurtures leads for 90 days', color: '#4ade80' },
-  { step: '08', label: 'Property Sale', sub: 'Qualified buyer converts', color: '#D4AF37' },
-]
-
-function SystemSection() {
-  return (
-    <section className="relative py-32 overflow-hidden" style={{ background: '#060810' }}>
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.05) 0%, transparent 60%)' }} />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
-        <Reveal className="text-center mb-20">
-          <Eyebrow>Our System</Eyebrow>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight">
-            The Real Estate<br />
-            <span className="gold-text italic">Growth Engine</span>
-          </h2>
-          <p className="text-white/40 font-body text-lg mt-4 max-w-xl mx-auto">
-            Not a loose set of services. A fully integrated system where every step feeds the next.
-          </p>
-        </Reveal>
-
-        {/* Funnel steps — zig-zag desktop, vertical mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {funnelSteps.map((s, i) => (
-            <Reveal key={s.step} delay={i * 0.07}>
-              <div className="relative group">
-                {/* Connector arrow right (not on last in row) */}
-                {i % 4 !== 3 && i !== funnelSteps.length - 1 && (
-                  <div className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 items-center">
-                    <div className="w-4 h-px" style={{ background: s.color, opacity: 0.4 }} />
-                    <div className="w-0 h-0"
-                      style={{ borderTop: '4px solid transparent', borderBottom: '4px solid transparent', borderLeft: `6px solid ${s.color}`, opacity: 0.4 }} />
-                  </div>
-                )}
-                <div className="p-6 rounded-2xl border transition-all duration-400 group-hover:border-opacity-50 h-full"
-                  style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${s.color}18` }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = s.color + '45')}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = s.color + '18')}>
-                  <div className="font-display text-4xl font-black opacity-[0.07] leading-none mb-3" style={{ color: s.color }}>
-                    {s.step}
-                  </div>
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-4"
-                    style={{ background: `${s.color}15`, border: `1px solid ${s.color}30` }}>
-                    <div className="w-2 h-2 rounded-full" style={{ background: s.color }} />
-                  </div>
-                  <h3 className="font-body font-semibold text-white text-sm mb-2">{s.label}</h3>
-                  <p className="text-white/35 font-body text-xs leading-relaxed">{s.sub}</p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-
-        {/* Bottom callout */}
-        <Reveal delay={0.5} className="mt-12">
-          <div className="p-8 rounded-2xl text-center"
-            style={{ background: 'rgba(212,175,55,0.04)', border: '1px solid rgba(212,175,55,0.12)' }}>
-            <p className="text-white/60 font-body text-lg">
-              This entire system runs <span className="text-gold-400 font-semibold">automatically</span> — so your sales team only talks to{' '}
-              <span className="text-white font-semibold">qualified, interested buyers</span> who are ready to visit.
-            </p>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
-/* ═══════════════════════════════════════════════════════════
-   4. SERVICES
-═══════════════════════════════════════════════════════════ */
-const services = [
-  {
-    number: '01',
-    title: 'Property Lead Generation',
-    outcomes: ['Qualified buyer enquiries', 'Lower cost-per-lead', 'Higher intent traffic'],
-    items: ['Meta Ads (Facebook & Instagram)', 'Google Search & Display', 'Conversion-Optimised Landing Pages', 'Project-specific ad creatives'],
-    color: '#D4AF37',
-    hoverBg: '#1a1400',
-  },
-  {
-    number: '02',
-    title: 'WhatsApp Automation System',
-    outcomes: ['2-min response time', 'No lead left unattended', '24/7 sales coverage'],
-    items: ['Instant auto-reply on enquiry', 'AI-powered lead qualification', 'Automated follow-up sequences', 'WhatsApp catalog integration'],
-    color: '#25D366',
-    hoverBg: '#041a0c',
-  },
-  {
-    number: '03',
-    title: 'CRM & Sales Pipeline',
-    outcomes: ['Full pipeline visibility', 'Sales team accountability', 'Data-driven decisions'],
-    items: ['Custom CRM setup & integration', 'Lead scoring & assignment', 'Real-time dashboards & reports', 'Sales performance tracking'],
-    color: '#38bdf8',
-    hoverBg: '#041020',
-  },
-  {
-    number: '04',
-    title: 'Retargeting Campaigns',
-    outcomes: ['Re-engage warm leads', 'Higher site visit conversion', 'Better ad ROI'],
-    items: ['Website visitor retargeting', 'Video view retargeting', 'Lookalike audience campaigns', 'Seasonal re-engagement'],
-    color: '#fb923c',
-    hoverBg: '#1a0800',
-  },
-  {
-    number: '05',
-    title: 'Site Visit Booking Funnel',
-    outcomes: ['More confirmed visits', 'Fewer no-shows', 'Higher close rate'],
-    items: ['Automated scheduling system', 'WhatsApp confirmation & reminders', 'Pre-visit buyer nurturing', 'Post-visit follow-up sequences'],
-    color: '#a78bfa',
-    hoverBg: '#0e0520',
-  },
-  {
-    number: '06',
-    title: 'AI Follow-Up & Nurturing',
-    outcomes: ['90-day lead nurturing', 'Reactivate cold leads', 'More conversions over time'],
-    items: ['AI-powered message sequences', 'Behavioural trigger automation', 'Long-term lead nurturing', 'Re-engagement campaigns'],
-    color: '#4ade80',
-    hoverBg: '#041510',
-  },
-]
-
-function ServicesSection() {
-  return (
-    <section className="relative py-32 overflow-hidden" style={{ background: '#080c18' }}>
-      <div className="absolute inset-0 dot-grid opacity-20" />
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
-        <Reveal className="mb-16">
-          <Eyebrow>What We Do</Eyebrow>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight">
-              Six Systems Built for<br />
-              <span className="gold-text italic">Real Estate Growth</span>
-            </h2>
-            <p className="text-white/40 font-body text-base max-w-xs">
-              Everything focused on one outcome: more qualified buyers walking into your site.
-            </p>
-          </div>
-        </Reveal>
-
-        <div className="space-y-4">
-          {services.map((svc, i) => (
-            <Reveal key={svc.number} delay={i * 0.06}>
-              <div className="relative group overflow-hidden rounded-2xl border border-white/5 cursor-default"
-                onMouseEnter={e => (e.currentTarget.style.borderColor = svc.color + '35')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)')}>
-                {/* BG wipe on hover */}
-                <div className="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 pointer-events-none"
-                  style={{ background: svc.hoverBg, transitionTimingFunction: 'cubic-bezier(0.16,1,0.3,1)' }} />
-                <div className="absolute inset-0 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
-                  style={{ background: 'rgba(255,255,255,0.018)' }} />
-
-                <div className="relative z-10 p-7 md:p-9 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                  {/* Number + title */}
-                  <div>
-                    <div className="font-display text-6xl font-black opacity-[0.07] leading-none mb-3" style={{ color: svc.color }}>
-                      {svc.number}
-                    </div>
-                    <h3 className="font-display text-xl font-bold text-white mb-4">{svc.title}</h3>
-                    <Link href="/contact" data-cursor
-                      className="inline-flex items-center gap-2 text-xs font-body font-semibold"
-                      style={{ color: svc.color }}>
-                      Learn More <ArrowRight className="w-3 h-3" />
-                    </Link>
-                  </div>
-                  {/* Outcomes */}
-                  <div>
-                    <p className="text-white/25 text-xs font-body tracking-widest uppercase mb-3">Outcomes</p>
-                    <div className="space-y-2">
-                      {svc.outcomes.map(o => (
-                        <div key={o} className="flex items-center gap-2">
-                          <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: svc.color }} />
-                          <span className="text-white/65 font-body text-sm">{o}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* What's included */}
-                  <div>
-                    <p className="text-white/25 text-xs font-body tracking-widest uppercase mb-3">Includes</p>
-                    <div className="space-y-2">
-                      {svc.items.map(item => (
-                        <div key={item} className="flex items-start gap-2">
-                          <div className="w-1 h-1 rounded-full mt-1.5 flex-shrink-0" style={{ background: svc.color }} />
-                          <span className="text-white/45 font-body text-sm">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ═══════════════════════════════════════════════════════════
-   5. WHY CHOOSE US
-═══════════════════════════════════════════════════════════ */
-const differentiators = [
-  { icon: Zap, title: '2-Minute Lead Response', desc: 'Our WhatsApp automation responds to every enquiry in under 2 minutes — before any competitor can.', stat: '2 min' },
-  { icon: Target, title: 'Real Estate Specialists', desc: 'We work exclusively with developers and plotting companies. We understand property funnels, not generic marketing.', stat: '100%' },
-  { icon: BarChart3, title: 'Full-Funnel Approach', desc: 'From the first ad click to the site visit booking — every step is tracked, optimized, and reported.', stat: 'Full' },
-  { icon: MessageCircle, title: 'AI-Powered Follow-Up', desc: 'Leads who don\'t convert immediately are nurtured for 90 days with intelligent, personalized messages.', stat: '90d' },
-  { icon: TrendingUp, title: 'Data-Driven Decisions', desc: 'Every campaign decision backed by real data. Cost per lead, site visit rate, conversion — all visible in real time.', stat: 'Live' },
-  { icon: CheckCircle, title: 'Revenue Partner, Not Agency', desc: 'We measure our success by your site visits and sales — not by impressions or likes.', stat: 'ROI' },
-]
-
-function WhyUsSection() {
-  return (
-    <section className="relative py-32 overflow-hidden" style={{ background: '#060810' }}>
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 80% 50%, rgba(212,175,55,0.04) 0%, transparent 60%)' }} />
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <Reveal direction="left">
-            <div className="sticky top-32">
-              <Eyebrow>Why Us</Eyebrow>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
-                We're Not an Agency.<br />
-                <span className="gold-text italic">We're Your Revenue Partner.</span>
+          {/* Left — copy */}
+          <div className="lg:sticky lg:top-32">
+            <R>
+              <div className="eyebrow">The Reality Today</div>
+              <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight mb-6"
+                style={{ color: 'var(--navy)' }}>
+                Why Most Developers<br />
+                Are Losing Leads<br />
+                <em className="font-serif italic font-light" style={{ color: 'var(--gold-dim)' }}>
+                  Every Single Day.
+                </em>
               </h2>
-              <p className="text-white/45 font-body text-lg leading-relaxed mb-8">
-                Traditional agencies optimize for impressions and followers. We optimize for one thing: qualified buyers walking into your project site.
+              <p className="font-body text-lg leading-relaxed mb-8" style={{ color: 'var(--text-muted)' }}>
+                These aren't edge cases. They're the daily reality for most real estate developers without a proper growth system in place.
               </p>
-              <div className="p-6 rounded-2xl" style={{ background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.12)' }}>
-                <p className="text-white/50 font-body text-sm leading-relaxed italic">
-                  "Helping Developers & Plotting Companies Across Nagpur and India Generate More Qualified Buyer Leads."
-                </p>
-                <div className="flex items-center gap-2 mt-3">
-                  <div className="h-px w-8 bg-gold-400/40" />
-                  <span className="text-gold-400 text-xs font-body tracking-widest uppercase">CommandGrowth · Based in Nagpur</span>
-                </div>
-              </div>
-            </div>
-          </Reveal>
+              <p className="font-body text-base leading-relaxed p-5 rounded-xl"
+                style={{ background: 'var(--ivory-warm)', border: '1px solid rgba(7,18,42,0.06)', color: 'var(--text-muted)' }}>
+                If even 3 of these feel familiar, you're conservatively losing{' '}
+                <strong style={{ color: 'var(--navy)', fontWeight: 600 }}>₹15–₹40 lakhs</strong>{' '}
+                in potential inventory bookings every quarter.
+              </p>
+            </R>
 
-          <div className="grid grid-cols-1 gap-4">
-            {differentiators.map((d, i) => {
-              const Icon = d.icon
+            {/* Image placeholder: overwhelmed sales team */}
+            <R d={0.2} className="mt-8">
+              <ImgBox label="Sales team managing property enquiries / CRM screen" aspectRatio="16/9" />
+            </R>
+          </div>
+
+          {/* Right — pain cards */}
+          <div className="space-y-4">
+            {pains.map((p, i) => {
+              const Icon = p.icon
               return (
-                <Reveal key={d.title} delay={i * 0.08} direction="right">
-                  <div className="flex gap-5 p-6 rounded-2xl border border-white/5 group hover:border-gold-500/20 transition-all duration-300"
-                    style={{ background: 'rgba(255,255,255,0.02)' }}>
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
-                      style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.15)' }}>
-                      <Icon className="w-5 h-5 text-gold-400" />
+                <R key={p.title} d={i * 0.07}>
+                  <div className="flex gap-5 p-6 rounded-xl group transition-all duration-300 hover:-translate-y-1"
+                    style={{ background: '#fff', border: '1px solid rgba(7,18,42,0.05)',
+                      boxShadow: '0 2px 16px rgba(7,18,42,0.05)' }}
+                    onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 32px rgba(7,18,42,0.1)')}
+                    onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 2px 16px rgba(7,18,42,0.05)')}>
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+                      style={{ background: 'var(--ivory-warm)', border: '1px solid rgba(7,18,42,0.06)' }}>
+                      <Icon className="w-4.5 h-4.5" style={{ color: 'var(--gold-dim)' }} />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-body font-semibold text-white mb-1">{d.title}</h3>
-                      <p className="text-white/40 font-body text-sm leading-relaxed">{d.desc}</p>
-                    </div>
-                    <div className="flex-shrink-0 text-right">
-                      <div className="font-display text-lg font-bold gold-text">{d.stat}</div>
+                    <div>
+                      <h3 className="font-body font-semibold mb-1.5" style={{ color: 'var(--navy)' }}>
+                        {p.title}
+                      </h3>
+                      <p className="font-body text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                        {p.desc}
+                      </p>
                     </div>
                   </div>
-                </Reveal>
+                </R>
               )
             })}
           </div>
@@ -596,97 +303,435 @@ function WhyUsSection() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   6. CASE STUDIES
+   3. GROWTH SYSTEM — Navy bg, gold accents, clean flow
 ═══════════════════════════════════════════════════════════ */
-const caseStudies = [
+const steps = [
+  { n: '01', title: 'Meta & Google Ads',      sub: 'Targeted to active property buyers',    col: '#D4AF37' },
+  { n: '02', title: 'Landing Page',           sub: 'Project-specific, conversion-focused',  col: '#E8CB6A' },
+  { n: '03', title: 'WhatsApp Automation',    sub: 'Instant reply, AI qualification',        col: '#34D399' },
+  { n: '04', title: 'CRM Pipeline',           sub: 'Every lead tracked, scored, assigned',   col: '#60A5FA' },
+  { n: '05', title: 'Site Visit Booking',     sub: 'Automated scheduling & reminders',       col: '#D4AF37' },
+  { n: '06', title: 'AI Nurture (90 Days)',   sub: 'Automated follow-up sequences',          col: '#A78BFA' },
+  { n: '07', title: 'Sales Handoff',          sub: 'Qualified buyer ready to discuss',       col: '#E8CB6A' },
+  { n: '08', title: 'Property Booking',       sub: 'Token, agreement, and sale',             col: '#34D399' },
+]
+
+function SystemSection() {
+  return (
+    <section className="relative py-28 overflow-hidden" style={{ background: 'var(--navy)' }}>
+      <div className="absolute inset-0 dot-grid-dark opacity-50" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-px"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)' }} />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start mb-20">
+          <R>
+            <div className="eyebrow" style={{ color: 'rgba(212,175,55,0.7)' }}>
+              <span style={{ background: 'rgba(212,175,55,0.4)', display: 'inline-block', width: 28, height: 1 }} />
+              Our System
+            </div>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight"
+              style={{ color: 'var(--ivory)' }}>
+              The Real Estate<br />
+              <em className="italic font-light" style={{ color: 'var(--gold)' }}>
+                Growth Engine
+              </em>
+            </h2>
+          </R>
+          <R d={0.15}>
+            <p className="font-body text-lg leading-relaxed" style={{ color: 'rgba(248,246,242,0.5)' }}>
+              Not a loose set of disconnected services. A fully integrated, automated system where every step feeds the next — from first ad click to confirmed property booking.
+            </p>
+          </R>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+          {steps.map((s, i) => (
+            <R key={s.n} d={i * 0.06}>
+              <div className="relative p-6 rounded-xl h-full group transition-all duration-300"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.08)' }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = s.col + '40'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'rgba(212,175,55,0.08)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+                }}>
+                <div className="font-serif text-5xl font-bold leading-none mb-4"
+                  style={{ color: s.col, opacity: 0.12 }}>{s.n}</div>
+                <div className="w-6 h-px mb-4" style={{ background: s.col, opacity: 0.6 }} />
+                <h3 className="font-body font-semibold text-sm mb-2" style={{ color: 'var(--ivory)' }}>{s.title}</h3>
+                <p className="font-body text-xs leading-relaxed" style={{ color: 'rgba(248,246,242,0.35)' }}>{s.sub}</p>
+                {/* Arrow connector */}
+                {i % 4 !== 3 && (
+                  <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                    <ArrowRight className="w-5 h-5" style={{ color: s.col, opacity: 0.35 }} />
+                  </div>
+                )}
+              </div>
+            </R>
+          ))}
+        </div>
+
+        {/* CRM dashboard image placeholder */}
+        <R d={0.3}>
+          <ImgBox
+            label="CRM pipeline dashboard / lead management system visual"
+            aspectRatio="16/6"
+            dark
+            className="w-full"
+            overlay={
+              <div className="absolute inset-0 flex items-center justify-center rounded-2xl"
+                style={{ background: 'rgba(7,18,42,0.4)' }}>
+                <div className="text-center">
+                  <p className="font-body text-xs tracking-widest uppercase mb-2"
+                    style={{ color: 'rgba(212,175,55,0.6)' }}>Replace with</p>
+                  <p className="font-serif text-xl font-semibold" style={{ color: 'rgba(248,246,242,0.6)' }}>
+                    CRM Dashboard / Lead Pipeline Visual
+                  </p>
+                </div>
+              </div>
+            }
+          />
+        </R>
+
+        <R d={0.35} className="mt-8">
+          <div className="p-7 rounded-xl text-center"
+            style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.15)' }}>
+            <p className="font-serif text-xl font-light italic" style={{ color: 'rgba(248,246,242,0.7)' }}>
+              "This entire system operates automatically — so your sales team speaks only to{' '}
+              <strong className="font-semibold not-italic" style={{ color: 'var(--gold)' }}>
+                qualified, interested buyers
+              </strong>{' '}
+              who are ready to visit your project site."
+            </p>
+          </div>
+        </R>
+      </div>
+    </section>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. SERVICES — Ivory bg, image placeholders per service
+═══════════════════════════════════════════════════════════ */
+const services = [
   {
-    project: 'Residential Township Project',
-    location: 'Nagpur, Maharashtra',
-    result: '214 qualified property enquiries in 30 days',
-    metrics: [
-      { label: 'Enquiries', val: '214', delta: '+180%' },
-      { label: 'Site Visits', val: '38', delta: '+47%' },
-      { label: 'Cost/Lead', val: '₹320', delta: '-62%' },
-    ],
+    n: '01', col: '#D4AF37',
+    title: 'Property Lead Generation',
+    desc: 'Precision Meta and Google campaigns targeting active property buyers within your project\'s catchment area. Every rupee tracked, every lead qualified.',
+    outcomes: ['Lower cost-per-enquiry', 'Higher intent buyers', 'Project-specific creatives'],
+    imgLabel: 'Meta Ads dashboard + property ad creative examples',
+    imgRatio: '16/9',
+  },
+  {
+    n: '02', col: '#34D399',
+    title: 'WhatsApp Automation System',
+    desc: 'Respond to every enquiry in under 2 minutes — automatically. AI qualification, instant catalogs, and follow-up sequences that never let a lead go cold.',
+    outcomes: ['2-minute response time', '24/7 lead handling', 'Auto follow-up sequences'],
+    imgLabel: 'WhatsApp conversation mockup showing AI responses and property catalog',
+    imgRatio: '16/9',
+  },
+  {
+    n: '03', col: '#60A5FA',
+    title: 'CRM & Sales Pipeline',
+    desc: 'Full visibility into every lead — where they came from, what they\'re interested in, and exactly where they are in the buying journey. No lead ever falls through.',
+    outcomes: ['Real-time pipeline visibility', 'Sales accountability', 'Revenue forecasting'],
+    imgLabel: 'CRM sales pipeline dashboard with lead tracking and metrics',
+    imgRatio: '16/9',
+  },
+  {
+    n: '04', col: '#F59E0B',
+    title: 'Site Visit Booking Funnel',
+    desc: 'A complete automated system that converts interested enquiries into confirmed site visits — with WhatsApp reminders, pre-visit nurturing, and no-show reduction.',
+    outcomes: ['More confirmed visits', 'Fewer no-shows', 'Higher close rate'],
+    imgLabel: 'Family / buyers visiting a residential project site / showflat',
+    imgRatio: '16/9',
+  },
+  {
+    n: '05', col: '#A78BFA',
+    title: 'Retargeting & Re-Engagement',
+    desc: 'Re-engage warm leads who showed interest but didn\'t convert. Systematic retargeting campaigns that bring buyers back at the right moment.',
+    outcomes: ['Re-activate cold leads', 'Better ad ROI', 'Lower blended CPL'],
+    imgLabel: 'Buyer journey visualization / retargeting funnel diagram',
+    imgRatio: '16/9',
+  },
+  {
+    n: '06', col: '#D4AF37',
+    title: 'AI Follow-Up & Lead Nurturing',
+    desc: '90-day automated nurturing sequences that keep your brand top-of-mind. Most property decisions take weeks or months — our system stays present throughout.',
+    outcomes: ['90-day nurture sequences', 'Reactivate cold leads', 'Long-term conversion'],
+    imgLabel: 'AI follow-up automation visual / lead nurture timeline',
+    imgRatio: '16/9',
+  },
+]
+
+function ServicesSection() {
+  return (
+    <section className="relative py-28 overflow-hidden" style={{ background: 'var(--ivory)' }}>
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
+        <R className="mb-16">
+          <div className="eyebrow">Our Services</div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight" style={{ color: 'var(--navy)' }}>
+              Six Systems Built for<br />
+              <em className="italic font-light" style={{ color: 'var(--gold-dim)' }}>Real Estate Revenue.</em>
+            </h2>
+            <p className="font-body text-base max-w-xs" style={{ color: 'var(--text-muted)' }}>
+              Every service measured by one outcome: qualified buyers at your project site.
+            </p>
+          </div>
+        </R>
+
+        <div className="space-y-6">
+          {services.map((svc, i) => (
+            <R key={svc.n} d={i * 0.05}>
+              <div className="rounded-2xl overflow-hidden group transition-all duration-400"
+                style={{ background: '#fff', border: '1px solid rgba(7,18,42,0.06)',
+                  boxShadow: '0 2px 20px rgba(7,18,42,0.05)' }}
+                onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 12px 40px rgba(7,18,42,0.1)')}
+                onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 2px 20px rgba(7,18,42,0.05)')}>
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
+                  {/* Image placeholder */}
+                  <div className="lg:col-span-2">
+                    <ImgBox label={svc.imgLabel} aspectRatio={svc.imgRatio}
+                      className="h-full rounded-none" rounded={false} />
+                  </div>
+                  {/* Content */}
+                  <div className="lg:col-span-3 p-8 lg:p-10">
+                    <div className="flex items-center gap-3 mb-5">
+                      <span className="font-body text-xs font-semibold tracking-[0.2em] uppercase"
+                        style={{ color: svc.col }}>{svc.n}</span>
+                      <div className="h-px flex-1" style={{ background: `${svc.col}30` }} />
+                    </div>
+                    <h3 className="font-serif text-2xl font-bold mb-4" style={{ color: 'var(--navy)' }}>
+                      {svc.title}
+                    </h3>
+                    <p className="font-body text-sm leading-relaxed mb-6" style={{ color: 'var(--text-muted)' }}>
+                      {svc.desc}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {svc.outcomes.map(o => (
+                        <div key={o} className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-body font-medium"
+                          style={{ background: `${svc.col}12`, color: svc.col, border: `1px solid ${svc.col}25` }}>
+                          <CheckCircle className="w-3 h-3" />
+                          {o}
+                        </div>
+                      ))}
+                    </div>
+                    <Link href="/contact" data-cursor className="inline-flex items-center gap-2 font-body text-sm font-semibold transition-colors duration-200"
+                      style={{ color: 'var(--navy)' }}
+                      onMouseEnter={e => ((e.target as HTMLElement).closest('a')!.style.color = svc.col)}
+                      onMouseLeave={e => ((e.target as HTMLElement).closest('a')!.style.color = 'var(--navy)')}>
+                      Learn More <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </R>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. WHY CHOOSE US — Alternating ivory/warm sections
+═══════════════════════════════════════════════════════════ */
+const differentiators = [
+  { icon: Zap,        stat: '2 min',  title: 'Speed-to-Lead Advantage',      desc: 'Our WhatsApp automation replies to every property enquiry in under 2 minutes — before any competitor can react. In real estate, the first responder wins.' },
+  { icon: Building2,  stat: '100%',   title: 'Real Estate Specialists Only',  desc: 'We work exclusively with developers, plotting companies, and township projects. We understand RERA, site visit psychology, inventory pricing — not generic marketing.' },
+  { icon: BarChart3,  stat: 'Full',   title: 'Complete Funnel Ownership',     desc: 'From the first ad impression to the site visit booking and post-visit follow-up — every step is tracked, measured, and optimized continuously.' },
+  { icon: MessageCircle, stat: '90d', title: 'AI-Powered Lead Nurturing',    desc: 'Property buying decisions take weeks or months. Our AI follow-up sequences keep your brand present for 90 days — turning "not ready yet" into a confirmed booking.' },
+  { icon: TrendingUp, stat: 'Live',   title: 'Real-Time Revenue Dashboards',  desc: 'Cost per enquiry, site visit conversion rate, ad ROI — all visible in a live dashboard. Every decision is backed by data, not gut-feel.' },
+  { icon: Target,     stat: 'ROI',    title: 'Revenue Partner, Not Agency',   desc: 'We measure success by your bookings and site visits — not impressions or engagement rates. Your revenue growth is the only metric that matters.' },
+]
+
+function WhySection() {
+  return (
+    <section className="relative py-28 overflow-hidden" style={{ background: 'var(--navy)' }}>
+      <div className="absolute inset-0 dot-grid-dark opacity-40" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start mb-20">
+          <R>
+            <div className="eyebrow" style={{ color: 'rgba(212,175,55,0.7)' }}>Why Us</div>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight" style={{ color: 'var(--ivory)' }}>
+              We're Not a Marketing Agency.<br />
+              <em className="italic font-light gold-text">We're Your Revenue Partner.</em>
+            </h2>
+          </R>
+          <R d={0.15} className="flex flex-col justify-end">
+            <p className="font-body text-lg leading-relaxed" style={{ color: 'rgba(248,246,242,0.5)' }}>
+              Traditional agencies optimize for impressions. We optimize for property bookings. Every decision we make is evaluated against one question: does this bring more qualified buyers to your site?
+            </p>
+          </R>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
+          {differentiators.map((d, i) => {
+            const Icon = d.icon
+            return (
+              <R key={d.title} d={i * 0.07}>
+                <div className="p-7 rounded-xl h-full group transition-all duration-300"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.08)' }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.055)'
+                    e.currentTarget.style.borderColor = 'rgba(212,175,55,0.25)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+                    e.currentTarget.style.borderColor = 'rgba(212,175,55,0.08)'
+                  }}>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                      style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.15)' }}>
+                      <Icon className="w-4.5 h-4.5" style={{ color: 'var(--gold)' }} />
+                    </div>
+                    <span className="font-serif text-2xl font-bold gold-text">{d.stat}</span>
+                  </div>
+                  <h3 className="font-body font-semibold mb-3" style={{ color: 'var(--ivory)' }}>{d.title}</h3>
+                  <p className="font-body text-sm leading-relaxed" style={{ color: 'rgba(248,246,242,0.4)' }}>{d.desc}</p>
+                </div>
+              </R>
+            )
+          })}
+        </div>
+
+        {/* Nagpur local positioning image */}
+        <R d={0.3}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+            <ImgBox
+              label="Nagpur skyline / MIHAN aerial view / regional township development"
+              aspectRatio="4/3"
+              dark
+            />
+            <div className="p-8">
+              <div className="eyebrow" style={{ color: 'rgba(212,175,55,0.6)' }}>Local Expertise</div>
+              <h3 className="font-serif text-3xl font-bold mb-5" style={{ color: 'var(--ivory)' }}>
+                Helping Developers Across<br />
+                <em className="italic font-light" style={{ color: 'var(--gold)' }}>Nagpur & India</em><br />
+                Generate More Buyer Leads.
+              </h3>
+              <p className="font-body text-base leading-relaxed" style={{ color: 'rgba(248,246,242,0.5)' }}>
+                We started in Nagpur because we saw how much potential the region's real estate market had — and how poorly served most developers were by generic marketing agencies. Today we serve developers across Maharashtra and pan-India.
+              </p>
+              <div className="flex items-center gap-3 mt-6">
+                <MapPin className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--gold)' }} />
+                <span className="font-body text-sm" style={{ color: 'rgba(212,175,55,0.7)' }}>
+                  Based in Nagpur · Operating pan-India
+                </span>
+              </div>
+            </div>
+          </div>
+        </R>
+      </div>
+    </section>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════
+   6. CASE STUDIES — Ivory bg, editorial/premium style
+═══════════════════════════════════════════════════════════ */
+const cases = [
+  {
+    project: 'Residential Township — Nagpur',
     tag: 'Meta Ads + WhatsApp Automation',
-    color: '#D4AF37',
+    result: '214 qualified property enquiries in 30 days',
+    col: '#D4AF37',
+    imgLabel: 'Township project aerial view / project site image',
+    metrics: [
+      { l: 'Qualified Enquiries', v: '214', d: '+180%' },
+      { l: 'Site Visits Booked', v: '38', d: '+47%' },
+      { l: 'Cost Per Enquiry', v: '₹320', d: '-62%' },
+    ],
   },
   {
-    project: 'Plotting Scheme Launch',
-    location: 'Nagpur Outskirts',
-    result: 'Response time reduced from 3 hours to 2 minutes',
+    project: 'Plotting Scheme — Wardha Road',
+    tag: 'WhatsApp AI + CRM Pipeline',
+    result: 'Response time reduced from 3 hours to under 2 minutes',
+    col: '#34D399',
+    imgLabel: 'Plotting layout map / aerial township view',
     metrics: [
-      { label: 'Response Time', val: '2 min', delta: '-95%' },
-      { label: 'Leads Nurtured', val: '890', delta: '90 days' },
-      { label: 'Site Visits', val: '+55%', delta: 'vs prior' },
+      { l: 'Avg Response Time', v: '< 2 min', d: '-95%' },
+      { l: 'Leads Nurtured', v: '890', d: '90 days' },
+      { l: 'Site Visits', v: '+55%', d: 'vs prior' },
     ],
-    tag: 'WhatsApp AI + CRM',
-    color: '#4ade80',
   },
   {
-    project: 'Premium Villa Project',
-    location: 'Wardha Road, Nagpur',
-    result: 'ROI of 8.4x on ad spend within 60 days',
+    project: 'Premium Villa Project — Nagpur',
+    tag: 'Full Funnel Growth System',
+    result: '8.4x return on ad spend within 60 days',
+    col: '#A78BFA',
+    imgLabel: 'Premium villa exterior / luxury residential project photography',
     metrics: [
-      { label: 'Ad Spend', val: '₹1.8L', delta: 'Total' },
-      { label: 'Bookings', val: '12', delta: 'Confirmed' },
-      { label: 'ROI', val: '8.4x', delta: '60 days' },
+      { l: 'Total Ad Spend', v: '₹1.8L', d: '60 days' },
+      { l: 'Bookings Confirmed', v: '12', d: 'Units' },
+      { l: 'ROI on Ad Spend', v: '8.4x', d: 'Verified' },
     ],
-    tag: 'Full Funnel System',
-    color: '#a78bfa',
   },
 ]
 
 function CaseStudiesSection() {
   return (
-    <section className="relative py-32 overflow-hidden" style={{ background: '#080c18' }}>
-      <div className="absolute inset-0 dot-grid opacity-15" />
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
-        <Reveal className="text-center mb-16">
-          <Eyebrow>Results</Eyebrow>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight">
-            Real Numbers.<br />
-            <span className="gold-text italic">Real Developers.</span>
-          </h2>
-          <p className="text-white/40 font-body text-base mt-4 max-w-lg mx-auto">
-            Placeholder results based on our system benchmarks. Your actual results shared in the growth audit call.
-          </p>
-        </Reveal>
+    <section className="relative py-28 overflow-hidden" style={{ background: 'var(--ivory-warm)' }}>
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
+        <R className="mb-16">
+          <div className="eyebrow">Results</div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight" style={{ color: 'var(--navy)' }}>
+              Real Numbers.<br />
+              <em className="italic font-light" style={{ color: 'var(--gold-dim)' }}>Real Developers.</em>
+            </h2>
+            <p className="font-body text-sm max-w-xs" style={{ color: 'var(--text-muted)' }}>
+              Representative results. Actual project data shared during your free growth audit.
+            </p>
+          </div>
+        </R>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {caseStudies.map((cs, i) => (
-            <Reveal key={cs.project} delay={i * 0.1}>
-              <div className="relative overflow-hidden rounded-2xl h-full group"
-                style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${cs.color}18` }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = cs.color + '40')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = cs.color + '18')}>
-                <div className="absolute top-0 left-0 right-0 h-px"
-                  style={{ background: `linear-gradient(90deg, transparent, ${cs.color}60, transparent)` }} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {cases.map((c, i) => (
+            <R key={c.project} d={i * 0.1}>
+              <div className="rounded-2xl overflow-hidden h-full group transition-all duration-400"
+                style={{ background: '#fff', border: '1px solid rgba(7,18,42,0.06)',
+                  boxShadow: '0 2px 20px rgba(7,18,42,0.06)' }}
+                onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 16px 48px rgba(7,18,42,0.12)')}
+                onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 2px 20px rgba(7,18,42,0.06)')}>
+                {/* Project image */}
+                <ImgBox label={c.imgLabel} aspectRatio="16/9" rounded={false}
+                  overlay={
+                    <div className="absolute top-4 left-4">
+                      <span className="font-body text-xs font-semibold px-3 py-1.5 rounded-full"
+                        style={{ background: '#fff', color: c.col, border: `1px solid ${c.col}30` }}>
+                        {c.tag}
+                      </span>
+                    </div>
+                  }
+                />
                 <div className="p-7">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5 text-xs font-body font-semibold"
-                    style={{ background: `${cs.color}12`, color: cs.color, border: `1px solid ${cs.color}25` }}>
-                    {cs.tag}
+                  <div className="flex items-center gap-2 mb-3">
+                    <MapPin className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--text-soft)' }} />
+                    <span className="font-body text-xs" style={{ color: 'var(--text-soft)' }}>{c.project}</span>
                   </div>
-                  <h3 className="font-display text-xl font-bold text-white mb-1">{cs.project}</h3>
-                  <div className="flex items-center gap-2 mb-5">
-                    <MapPin className="w-3 h-3 text-white/25" />
-                    <span className="text-white/30 text-xs font-body">{cs.location}</span>
-                  </div>
-                  <p className="text-white/70 font-body text-base font-semibold mb-6 leading-snug italic">
-                    "{cs.result}"
+                  <p className="font-serif text-lg font-semibold mb-5 leading-snug" style={{ color: 'var(--navy)' }}>
+                    "{c.result}"
                   </p>
-                  <div className="grid grid-cols-3 gap-3 pt-5 border-t border-white/5">
-                    {cs.metrics.map(m => (
-                      <div key={m.label} className="text-center">
-                        <div className="font-display text-xl font-bold mb-0.5" style={{ color: cs.color }}>{m.val}</div>
-                        <div className="text-white/25 text-xs font-body">{m.label}</div>
-                        <div className="text-xs font-body mt-0.5" style={{ color: cs.color }}>{m.delta}</div>
+                  <div className="grid grid-cols-3 gap-3 pt-5"
+                    style={{ borderTop: '1px solid rgba(7,18,42,0.06)' }}>
+                    {c.metrics.map(m => (
+                      <div key={m.l} className="text-center">
+                        <div className="font-serif text-xl font-bold mb-0.5" style={{ color: c.col }}>{m.v}</div>
+                        <div className="font-body text-xs mb-0.5" style={{ color: 'var(--text-soft)' }}>{m.l}</div>
+                        <div className="font-body text-xs font-medium" style={{ color: c.col }}>{m.d}</div>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-            </Reveal>
+            </R>
           ))}
         </div>
       </div>
@@ -698,54 +743,53 @@ function CaseStudiesSection() {
    7. FAQ
 ═══════════════════════════════════════════════════════════ */
 const faqs = [
-  { q: 'Do you work with all types of real estate projects?', a: 'We work with residential developers, plotting companies, villa projects, and township developers. Our system is built specifically for Indian real estate, not generic businesses.' },
-  { q: 'How quickly will we see results?', a: 'Most clients see a significant increase in qualified enquiries within the first 2–3 weeks of running campaigns. Full funnel results — including site visit conversion — typically improve by 30–60 days.' },
-  { q: 'What makes you different from a normal digital marketing agency?', a: 'We exclusively serve real estate. We understand RERA, buyer psychology, site visit funnels, and property pricing — things a generic agency doesn\'t. Our entire system is built around getting buyers to your site, not just generating clicks.' },
-  { q: 'Do we need an existing CRM?', a: 'No. We set up and manage the entire CRM pipeline for you. If you already have one, we integrate with it seamlessly.' },
-  { q: 'What is the minimum budget required for Meta Ads?', a: 'We recommend a minimum ad spend of ₹30,000–₹50,000/month to see meaningful results. We optimize every rupee for maximum qualified leads.' },
-  { q: 'How does the WhatsApp automation work?', a: 'When a lead submits a form or enquires, our system sends an instant WhatsApp message within 30–60 seconds, qualifies them with AI-powered questions, and assigns them to the right salesperson — all automatically.' },
+  { q: 'Do you work with all types of real estate projects?', a: 'We work exclusively with real estate — residential developments, plotting schemes, villa projects, and townships across India. We understand property funnels, RERA compliance, and buyer psychology deeply.' },
+  { q: 'How quickly will we see more qualified enquiries?', a: 'Most developers see a meaningful improvement in enquiry quality and volume within the first 2–3 weeks. Full funnel results — site visit conversion and lead nurturing — show strong improvement by 60 days.' },
+  { q: 'What separates you from a regular digital marketing agency?', a: 'We exclusively serve real estate. We understand site visit funnels, property inventory pricing, buyer timelines, and RERA-safe marketing — things a generic agency doesn\'t know. Our entire system is built to get buyers to your site, not just generate clicks.' },
+  { q: 'Do we need an existing CRM to work with you?', a: 'No. We set up and manage the entire CRM pipeline for you. If you already use a CRM, we integrate with it seamlessly and train your sales team on the dashboards.' },
+  { q: 'What is the recommended monthly ad budget?', a: 'We recommend a minimum ad spend of ₹40,000–₹60,000/month for meaningful results. We optimize every rupee across Meta and Google to minimize cost-per-qualified-enquiry.' },
+  { q: 'How does the WhatsApp automation actually work?', a: 'When a lead submits a form or enquires via any channel, our system sends an automatic WhatsApp message within 30–60 seconds. AI then qualifies them (budget, timeline, preferred location) and assigns them to the right salesperson — all before your team needs to make a single call.' },
 ]
 
 function FAQSection() {
-  const [open, setOpen] = useState<number | null>(null)
+  const [open, setOpen] = useState<number|null>(null)
   return (
-    <section className="relative py-32 overflow-hidden" style={{ background: '#060810' }}>
-      <div className="relative z-10 max-w-4xl mx-auto px-6 lg:px-8">
-        <Reveal className="text-center mb-16">
-          <Eyebrow>FAQ</Eyebrow>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
+    <section className="relative py-28" style={{ background: 'var(--ivory)' }}>
+      <div className="max-w-5xl mx-auto px-6 lg:px-10">
+        <R className="text-center mb-16">
+          <div className="eyebrow">Frequently Asked</div>
+          <h2 className="font-serif text-4xl md:text-5xl font-bold" style={{ color: 'var(--navy)' }}>
             Questions Developers<br />
-            <span className="gold-text italic">Always Ask Us</span>
+            <em className="italic font-light" style={{ color: 'var(--gold-dim)' }}>Always Ask Us</em>
           </h2>
-        </Reveal>
+        </R>
         <div className="space-y-3">
           {faqs.map((faq, i) => (
-            <Reveal key={i} delay={i * 0.06}>
-              <div className="rounded-2xl border overflow-hidden transition-all duration-300"
-                style={{ border: open === i ? '1px solid rgba(212,175,55,0.25)' : '1px solid rgba(255,255,255,0.05)',
-                  background: open === i ? 'rgba(212,175,55,0.04)' : 'rgba(255,255,255,0.02)' }}>
-                <button
-                  className="w-full flex items-center justify-between p-6 text-left"
-                  onClick={() => setOpen(open === i ? null : i)}
-                  data-cursor>
-                  <span className="font-body font-semibold text-white pr-4">{faq.q}</span>
+            <R key={i} d={i * 0.05}>
+              <div className="rounded-xl overflow-hidden transition-all duration-300"
+                style={{ background: '#fff', border: open === i ? '1px solid rgba(212,175,55,0.3)' : '1px solid rgba(7,18,42,0.06)',
+                  boxShadow: open === i ? '0 4px 24px rgba(212,175,55,0.08)' : '0 2px 12px rgba(7,18,42,0.04)' }}>
+                <button className="w-full flex items-center justify-between p-6 text-left" data-cursor
+                  onClick={() => setOpen(open === i ? null : i)}>
+                  <span className="font-body font-medium pr-4" style={{ color: 'var(--navy)', fontSize: 15 }}>{faq.q}</span>
                   <motion.div animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: 0.3 }}
                     className="flex-shrink-0">
-                    <ChevronDown className="w-5 h-5 text-gold-400" />
+                    <ChevronDown className="w-5 h-5" style={{ color: 'var(--gold-dim)' }} />
                   </motion.div>
                 </button>
                 <AnimatePresence>
                   {open === i && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
-                      <div className="px-6 pb-6 text-white/50 font-body text-sm leading-relaxed border-t border-white/5 pt-4">
+                      <div className="px-6 pb-6 font-body text-sm leading-relaxed"
+                        style={{ color: 'var(--text-muted)', borderTop: '1px solid rgba(7,18,42,0.05)', paddingTop: 16 }}>
                         {faq.a}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-            </Reveal>
+            </R>
           ))}
         </div>
       </div>
@@ -754,67 +798,83 @@ function FAQSection() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   8. FINAL CTA
+   8. FINAL CTA — Navy bg, image placeholder, strong copy
 ═══════════════════════════════════════════════════════════ */
 function CTASection() {
   return (
-    <section className="relative py-32 overflow-hidden" style={{ background: '#080c18' }}>
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 65%)' }} />
-      <div className="absolute inset-0 dot-grid opacity-20" />
+    <section className="relative overflow-hidden" style={{ background: 'var(--navy)' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+        {/* Left — image placeholder */}
+        <ImgBox
+          label="Developer meeting / project walkthrough / architecture consultation scene"
+          aspectRatio="auto"
+          dark
+          className="min-h-[400px] lg:min-h-full rounded-none"
+          overlay={
+            <div className="absolute inset-0"
+              style={{ background: 'linear-gradient(90deg, transparent 60%, rgba(7,18,42,0.5) 100%)' }} />
+          }
+        />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-        <Reveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 border border-gold-500/20 mb-8"
-            style={{ background: 'rgba(212,175,55,0.06)' }}>
-            <MapPin className="w-3 h-3 text-gold-400" />
-            <span className="text-gold-400 text-xs font-body font-semibold tracking-[0.2em] uppercase">
-              Serving Developers Across Nagpur & India
-            </span>
-          </div>
+        {/* Right — CTA copy */}
+        <div className="flex flex-col justify-center p-12 lg:p-16">
+          <R>
+            <div className="eyebrow" style={{ color: 'rgba(212,175,55,0.6)' }}>Get Started</div>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight mb-6"
+              style={{ color: 'var(--ivory)' }}>
+              Ready to Fill Your<br />
+              <em className="italic gold-text">Sales Pipeline?</em>
+            </h2>
+            <p className="font-body text-lg leading-relaxed mb-10"
+              style={{ color: 'rgba(248,246,242,0.5)' }}>
+              Book a free 30-minute Growth Audit. We'll analyse your current lead generation setup, identify where buyers are dropping off, and show you exactly how many more qualified enquiries you could be getting each month.
+            </p>
 
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            Ready to Fill Your<br />
-            <span className="gold-text italic">Sales Pipeline?</span>
-          </h2>
-          <p className="text-white/45 font-body text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
-            Book a free 30-minute Growth Audit. We'll analyse your current lead generation, identify the gaps, and show you exactly how many more qualified buyers you could be getting.
-          </p>
-
-          <div className="flex flex-wrap gap-4 justify-center mb-12">
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-              <Link href="/contact" data-cursor
-                className="inline-flex items-center gap-3 px-10 py-5 font-bold font-body text-navy-900 text-lg shimmer"
-                style={{
-                  background: 'linear-gradient(135deg, #e8c84a 0%, #D4AF37 50%, #b8952e 100%)',
-                  clipPath: 'polygon(16px 0%, 100% 0%, calc(100% - 16px) 100%, 0% 100%)',
-                  boxShadow: '0 0 60px rgba(212,175,55,0.35)',
-                }}>
-                Book Free Growth Audit
-                <ArrowRight className="w-5 h-5" />
+            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+              <Link href="/contact" data-cursor className="btn-gold">
+                <span>Book Free Growth Audit</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-              <a href="https://wa.me/91XXXXXXXXXX" data-cursor
-                className="inline-flex items-center gap-3 px-10 py-5 font-semibold font-body text-gold-400 border border-gold-500/30 hover:border-gold-500/60 transition-colors"
-                style={{ clipPath: 'polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)' }}>
-                <MessageCircle className="w-5 h-5" />
-                Chat on WhatsApp
+              <a href="https://wa.me/91XXXXXXXXXX" data-cursor className="btn-outline-light">
+                <MessageCircle className="w-4 h-4" />
+                <span>Chat on WhatsApp</span>
               </a>
-            </motion.div>
-          </div>
+            </div>
 
-          {/* Trust signals */}
-          <div className="flex flex-wrap justify-center gap-6 pt-8 border-t border-white/5">
-            {[
-              '✓ No lock-in contracts',
-              '✓ Real estate specialists',
-              '✓ Results in 30 days',
-              '✓ Based in Nagpur',
-            ].map(t => (
-              <span key={t} className="text-white/30 font-body text-sm">{t}</span>
-            ))}
-          </div>
-        </Reveal>
+            {/* Trust signals */}
+            <div className="grid grid-cols-2 gap-3 pt-8"
+              style={{ borderTop: '1px solid rgba(212,175,55,0.12)' }}>
+              {[
+                '✓ No lock-in contracts',
+                '✓ Real estate specialists',
+                '✓ Results visible in 30 days',
+                '✓ Based in Nagpur',
+              ].map(t => (
+                <div key={t} className="flex items-center gap-2">
+                  <span className="font-body text-sm" style={{ color: 'rgba(248,246,242,0.35)' }}>{t}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Contact info */}
+            <div className="flex flex-wrap gap-6 mt-8">
+              <a href="tel:+91XXXXXXXXXX" data-cursor
+                className="flex items-center gap-2 font-body text-sm transition-colors duration-200"
+                style={{ color: 'rgba(248,246,242,0.35)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--gold)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(248,246,242,0.35)')}>
+                <Phone className="w-4 h-4" /> +91 XX XXXX XXXX
+              </a>
+              <a href="mailto:hello@commandgrowth.org" data-cursor
+                className="flex items-center gap-2 font-body text-sm transition-colors duration-200"
+                style={{ color: 'rgba(248,246,242,0.35)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--gold)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(248,246,242,0.35)')}>
+                hello@commandgrowth.org
+              </a>
+            </div>
+          </R>
+        </div>
       </div>
     </section>
   )
@@ -830,7 +890,7 @@ export default function HomePage() {
       <PainSection />
       <SystemSection />
       <ServicesSection />
-      <WhyUsSection />
+      <WhySection />
       <CaseStudiesSection />
       <FAQSection />
       <CTASection />
