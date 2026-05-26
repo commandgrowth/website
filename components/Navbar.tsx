@@ -7,76 +7,129 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ArrowRight } from 'lucide-react'
 
-const navLinks = [
+const links = [
   { href: '/',         label: 'Home'     },
   { href: '/services', label: 'Services' },
   { href: '/about',    label: 'About'    },
   { href: '/contact',  label: 'Contact'  },
 ]
 
+/* Matches the page content max-width */
+const MAX = 'max-w-6xl mx-auto'
+
 export default function Navbar() {
-  const [scrolled, setScrolled]     = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [dark, setDark]             = useState(false)
+  const [scrolled,    setScrolled]    = useState(false)
+  const [onDark,      setOnDark]      = useState(true)   // hero is dark
+  const [mobileOpen,  setMobileOpen]  = useState(false)
   const pathname = usePathname()
 
   useEffect(() => {
     const fn = () => {
-      setScrolled(window.scrollY > 40)
-      // Switch to dark nav when over hero (first 90vh)
-      setDark(window.scrollY < window.innerHeight * 0.85)
+      const y = window.scrollY
+      setScrolled(y > 48)
+      // Switch once past the hero (~90vh)
+      setOnDark(y < window.innerHeight * 0.88)
     }
     fn()
-    window.addEventListener('scroll', fn)
+    window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  const navTextColor = dark && !scrolled ? 'rgba(248,246,242,0.75)' : '#07122A'
-  const navHoverColor = dark && !scrolled ? '#F8F6F2' : '#07122A'
-  const logoFilter = dark && !scrolled ? 'brightness(0) invert(1)' : 'none'
+  /* ─── Visual state ─────────────────────────────────── */
+  const navBg =
+    scrolled && !onDark  ? 'rgba(248,246,242,0.97)' :
+    scrolled &&  onDark  ? 'rgba(7,18,42,0.97)'     :
+    'transparent'
+
+  const navBorder =
+    scrolled && !onDark ? '1px solid rgba(7,18,42,0.06)' :
+    scrolled &&  onDark ? '1px solid rgba(201,168,76,0.1)' :
+    '1px solid transparent'
+
+  const navShadow =
+    scrolled && !onDark ? '0 1px 20px rgba(7,18,42,0.06)' :
+    scrolled &&  onDark ? 'none' :
+    'none'
+
+  const linkColor = onDark
+    ? 'rgba(248,246,242,0.6)'
+    : 'rgba(7,18,42,0.55)'
+
+  const linkHover = onDark ? 'var(--ivory)' : 'var(--navy)'
+  const activeColor = '#C9A84C'
+  const logoFilter = onDark ? 'brightness(0) invert(1)' : 'none'
 
   return (
     <>
       <motion.header
-        initial={{ y: -80, opacity: 0 }}
+        initial={{ y: -72, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? dark ? 'nav-dark-scrolled' : 'nav-scrolled'
-            : 'bg-transparent'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="flex items-center justify-between h-20">
+        transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          position: 'fixed', top: 0, left: 0, right: 0,
+          zIndex: 50,
+          background: navBg,
+          borderBottom: navBorder,
+          boxShadow: navShadow,
+          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
+          transition: 'background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease',
+        }}>
+
+        {/* ── Constrained inner container ── */}
+        <div className={`${MAX} px-6 lg:px-10`}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
 
             {/* Logo */}
-            <Link href="/" className="flex items-center group" data-cursor>
+            <Link href="/" data-cursor style={{ display: 'flex', alignItems: 'center' }}
+              className="group">
               <Image
                 src="/Logo.png"
                 alt="CommandGrowth"
-                width={160} height={56}
-                className="object-contain h-11 w-auto transition-all duration-400 group-hover:scale-105"
-                style={{ filter: logoFilter }}
+                width={148} height={52}
                 priority
+                style={{
+                  objectFit: 'contain',
+                  height: 40, width: 'auto',
+                  filter: logoFilter,
+                  transition: 'filter 0.4s ease, transform 0.3s ease',
+                }}
+                className="group-hover:scale-[1.03]"
               />
             </Link>
 
-            {/* Desktop nav links */}
-            <nav className="hidden md:flex items-center gap-10">
-              {navLinks.map(link => (
+            {/* Desktop nav */}
+            <nav style={{ display: 'flex', alignItems: 'center', gap: 36 }}
+              className="hidden md:flex">
+              {links.map(link => (
                 <Link key={link.href} href={link.href} data-cursor
-                  className="relative text-sm font-body font-medium tracking-wide transition-colors duration-200 underline-gold"
                   style={{
-                    color: pathname === link.href
-                      ? '#D4AF37'
-                      : navTextColor
+                    position: 'relative',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    letterSpacing: '0.04em',
+                    color: pathname === link.href ? activeColor : linkColor,
+                    textDecoration: 'none',
+                    transition: 'color 0.2s ease',
+                    paddingBottom: 2,
+                  }}
+                  onMouseEnter={e => {
+                    if (pathname !== link.href)
+                      (e.currentTarget as HTMLElement).style.color = linkHover
+                  }}
+                  onMouseLeave={e => {
+                    if (pathname !== link.href)
+                      (e.currentTarget as HTMLElement).style.color = linkColor
                   }}>
                   {link.label}
+                  {/* Active underline */}
                   {pathname === link.href && (
-                    <motion.span layoutId="indicator"
-                      className="absolute -bottom-1 left-0 right-0 h-px"
-                      style={{ background: '#D4AF37' }} />
+                    <motion.span layoutId="nav-line"
+                      style={{
+                        position: 'absolute', bottom: -2, left: 0, right: 0,
+                        height: 1, background: activeColor,
+                      }} />
                   )}
                 </Link>
               ))}
@@ -84,23 +137,46 @@ export default function Navbar() {
 
             {/* CTA */}
             <div className="hidden md:flex items-center gap-3">
-              <Link href="/contact" data-cursor className="btn-gold text-xs">
-                <span>Book Free Audit</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+              {/* WhatsApp quick pill */}
+              <a href="https://wa.me/91XXXXXXXXXX" data-cursor
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 7,
+                  fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
+                  color: '#10B981',
+                  padding: '7px 14px', borderRadius: 20,
+                  background: 'rgba(16,185,129,0.08)',
+                  border: '1px solid rgba(16,185,129,0.18)',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(16,185,129,0.14)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'rgba(16,185,129,0.08)'}>
+                <span style={{ display: 'block', width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite' }} />
+                WhatsApp Us
+              </a>
+
+              <Link href="/contact" data-cursor className="btn-gold"
+                style={{ padding: '9px 22px', fontSize: 12 }}>
+                <span>Free Growth Audit</span>
+                <ArrowRight style={{ width: 13, height: 13 }} />
               </Link>
             </div>
 
             {/* Mobile toggle */}
-            <button className="md:hidden transition-colors" data-cursor
+            <button className="md:hidden" data-cursor
               onClick={() => setMobileOpen(!mobileOpen)}
-              style={{ color: navTextColor }}>
-              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              style={{
+                background: 'none', border: 'none', padding: 4,
+                color: onDark ? 'rgba(248,246,242,0.7)' : 'rgba(7,18,42,0.65)',
+                transition: 'color 0.2s',
+              }}>
+              {mobileOpen ? <X style={{ width: 22, height: 22 }} /> : <Menu style={{ width: 22, height: 22 }} />}
             </button>
           </div>
         </div>
       </motion.header>
 
-      {/* Mobile menu — ivory bg */}
+      {/* ── Mobile menu ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -108,26 +184,32 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-40 flex flex-col justify-center items-center gap-8"
-            style={{ background: '#F8F6F2' }}
-          >
-            <Image src="/Logo.png" alt="CommandGrowth" width={140} height={52}
-              className="object-contain h-12 w-auto mb-4" />
-            {navLinks.map((link, i) => (
+            style={{
+              position: 'fixed', inset: 0, zIndex: 40,
+              background: 'var(--ivory)',
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 32,
+            }}>
+            <Image src="/Logo.png" alt="CommandGrowth" width={140} height={50}
+              style={{ objectFit: 'contain', height: 44, width: 'auto', marginBottom: 8 }} />
+            {links.map((link, i) => (
               <motion.div key={link.href}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07 + 0.1 }}>
                 <Link href={link.href} onClick={() => setMobileOpen(false)} data-cursor
-                  className="text-4xl font-serif font-bold"
-                  style={{ color: pathname === link.href ? '#D4AF37' : '#07122A' }}>
+                  style={{
+                    fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: 36,
+                    color: pathname === link.href ? 'var(--gold-dim)' : 'var(--navy)',
+                    textDecoration: 'none',
+                  }}>
                   {link.label}
                 </Link>
               </motion.div>
             ))}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}>
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.42 }}>
               <Link href="/contact" onClick={() => setMobileOpen(false)} data-cursor className="btn-gold">
-                <span>Book Free Growth Audit</span>
+                <span>Book Free Audit</span>
               </Link>
             </motion.div>
           </motion.div>
