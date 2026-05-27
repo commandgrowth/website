@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useRef, useState } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
@@ -249,10 +250,31 @@ function Hero() {
 
             {/* Central anchor — fixed aspect ratio, not too tall */}
             <div className="relative">
-              <Img
-                label="Luxury residential project / township aerial — replace with actual photo"
-                ratio="5/6" dark cls="w-full"
-              >
+              
+              <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: '5/6' }}>
+                <Image
+                  src="/hero-project.webp"
+                  alt="Premium residential township development"
+                  fill
+                  className="object-cover object-center"
+                  priority
+                  sizes="(max-width: 1024px) 0px, 536px"
+                />
+                {/* Bottom gradient overlay */}
+                <div className="absolute inset-0 rounded-xl"
+                  style={{ background: 'linear-gradient(180deg, transparent 50%, rgba(7,18,42,0.82) 100%)' }} />
+                {/* Project label */}
+                <div className="absolute bottom-5 left-5 right-5 z-10">
+                  <p style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
+                    color: 'rgba(201,168,76,0.65)', marginBottom: 5 }}>
+                    Featured Project
+                  </p>
+                  <p className="font-serif font-semibold" style={{ fontSize: 18, color: 'var(--ivory)' }}>
+                    Township Development · Nagpur
+                  </p>
+                </div>
+              </div>
+              
                 {/* Subtle bottom gradient */}
                 <div className="absolute inset-0 rounded-xl"
                   style={{ background: 'linear-gradient(180deg, transparent 50%, rgba(7,18,42,0.82) 100%)' }} />
