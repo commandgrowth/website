@@ -145,10 +145,6 @@ function Metric({ v, l, light = false }: { v: string; l: string; light?: boolean
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   1.  HERO — Balanced 7/5 grid, controlled scale,
-       anchored right-side visual, floating cards orbiting it
-═══════════════════════════════════════════════════════════ */
 function Hero() {
   return (
     <section className="relative overflow-hidden flex items-center"
