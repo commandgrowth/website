@@ -169,7 +169,7 @@ function Hero() {
             <div className="relative">
               <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: '5/6' }}>
                 <Image
-                  src="/hero-project.webp"
+                  src="/hero-project.jpg"
                   alt="Premium residential township development project"
                   fill
                   className="object-cover object-center"
