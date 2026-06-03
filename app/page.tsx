@@ -1,33 +1,21 @@
 'use client'
 
-import Image from 'next/image'
 import { useRef, useState } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ArrowRight, CheckCircle, ChevronDown, MessageCircle,
   BarChart3, Zap, Clock, MapPin, Building2, TrendingUp,
   Phone, AlertTriangle, Target, Shield
 } from 'lucide-react'
 
-/* ─────────────────────────────────────────────────────────
-   DESIGN CONSTANTS
-───────────────────────────────────────────────────────── */
-const SYSTEM = 'The Real Estate Revenue Engine™'
-
-/* Editorial max-width: tighter than 7xl for luxury feel */
+const SYSTEM = 'The Real Estate Revenue Engine\u2122'
 const MAX = 'max-w-6xl mx-auto'
-
-/* Section vertical rhythm — consistent across all sections */
 const PY = { paddingTop: 112, paddingBottom: 112 }
 const PY_LG = { paddingTop: 140, paddingBottom: 140 }
 
-/* ─────────────────────────────────────────────────────────
-   REVEAL WRAPPER
-───────────────────────────────────────────────────────── */
-function R({
-  c = '', d = 0, dir = 'up', children
-}: {
+function R({ c = '', d = 0, dir = 'up', children }: {
   c?: string; d?: number; dir?: 'up' | 'left' | 'right'; children: React.ReactNode
 }) {
   const ref = useRef(null)
@@ -46,45 +34,25 @@ function R({
   )
 }
 
-/* ─────────────────────────────────────────────────────────
-   IMAGE PLACEHOLDER
-   — Reduced visual weight, architectural feel
-   — Content always dominates; image supports
-───────────────────────────────────────────────────────── */
-function Img({
-  label, ratio = '4/3', dark = false,
-  cls = '', radius = true, children
-}: {
+function Img({ label, ratio = '4/3', dark = false, cls = '', radius = true, children }: {
   label: string; ratio?: string; dark?: boolean
   cls?: string; radius?: boolean; children?: React.ReactNode
 }) {
   return (
     <div
-      className={`${dark ? 'img-ph-dark' : 'img-ph'} relative overflow-hidden
-        ${radius ? 'rounded-xl' : ''} ${cls}`}
+      className={`${dark ? 'img-ph-dark' : 'img-ph'} relative overflow-hidden ${radius ? 'rounded-xl' : ''} ${cls}`}
       style={{ aspectRatio: ratio }}
       data-label={label}
     >
-      {/* Quiet architectural wireframe — very subtle */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ opacity: dark ? 0.04 : 0.04 }}>
-        <div className="absolute" style={{
-          inset: '18%',
-          border: `1px solid ${dark ? 'rgba(201,168,76,1)' : 'rgba(7,18,42,1)'}`,
-        }} />
-        <Building2 style={{
-          width: 36, height: 36,
-          color: dark ? 'rgba(201,168,76,1)' : 'rgba(7,18,42,1)',
-        }} />
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>
+        <div className="absolute" style={{ inset: '18%', border: `1px solid ${dark ? 'rgba(201,168,76,1)' : 'rgba(7,18,42,1)'}` }} />
+        <Building2 style={{ width: 36, height: 36, color: dark ? 'rgba(201,168,76,1)' : 'rgba(7,18,42,1)' }} />
       </div>
       {children}
     </div>
   )
 }
 
-/* ─────────────────────────────────────────────────────────
-   EYEBROW
-───────────────────────────────────────────────────────── */
 function Eye({ children, light = false }: { children: string; light?: boolean }) {
   return (
     <div className={light ? 'eyebrow-light' : 'eyebrow'} style={{ marginBottom: 18 }}>
@@ -93,12 +61,7 @@ function Eye({ children, light = false }: { children: string; light?: boolean })
   )
 }
 
-/* ─────────────────────────────────────────────────────────
-   SECTION HEADING — controlled scale
-───────────────────────────────────────────────────────── */
-function H2({
-  children, light = false, center = false, size = 'md'
-}: {
+function H2({ children, light = false, center = false, size = 'md' }: {
   children: React.ReactNode; light?: boolean; center?: boolean; size?: 'sm' | 'md' | 'lg'
 }) {
   const fs =
@@ -107,40 +70,25 @@ function H2({
                    'clamp(32px, 3.8vw, 50px)'
   return (
     <h2 className={`font-serif font-bold leading-tight ${center ? 'text-center' : ''}`}
-      style={{
-        fontSize: fs,
-        letterSpacing: '-0.012em',
-        color: light ? 'var(--ivory)' : 'var(--navy)',
-        lineHeight: 1.12,
-        marginBottom: 16,
-      }}>
+      style={{ fontSize: fs, letterSpacing: '-0.012em', color: light ? 'var(--ivory)' : 'var(--navy)', lineHeight: 1.12, marginBottom: 16 }}>
       {children}
     </h2>
   )
 }
 
-/* ─────────────────────────────────────────────────────────
-   GOLD ITALIC SPAN — for headline accents
-───────────────────────────────────────────────────────── */
 function GI({ children, dark = true }: { children: string; dark?: boolean }) {
   return dark
     ? <em className="not-italic gold-text">{children}</em>
     : <em className="not-italic italic font-light" style={{ color: 'var(--gold-dim)' }}>{children}</em>
 }
 
-/* ─────────────────────────────────────────────────────────
-   METRIC CARD — compact, architectural
-───────────────────────────────────────────────────────── */
 function Metric({ v, l, light = false }: { v: string; l: string; light?: boolean }) {
   return (
     <div>
       <div className="font-serif font-bold leading-none mb-1"
         style={{ fontSize: 22, color: light ? 'var(--gold-light)' : 'var(--gold-dim)' }}>{v}</div>
       <div className="font-body"
-        style={{
-          fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase',
-          color: light ? 'rgba(248,246,242,0.32)' : 'var(--soft)',
-        }}>{l}</div>
+        style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: light ? 'rgba(248,246,242,0.32)' : 'var(--soft)' }}>{l}</div>
     </div>
   )
 }
@@ -150,68 +98,44 @@ function Hero() {
     <section className="relative overflow-hidden flex items-center"
       style={{ background: 'var(--navy)', minHeight: '100vh' }}>
 
-      {/* Quiet textures — no glow blobs */}
       <div className="absolute inset-0 texture-lines-dark" />
       <div className="absolute inset-0 grid-dots-dark" style={{ opacity: 0.28 }} />
-      {/* Single left gold rule */}
       <div className="absolute left-0 top-16 bottom-16 w-px"
         style={{ background: 'linear-gradient(180deg, transparent, rgba(201,168,76,0.25), transparent)' }} />
 
       <div className={`relative z-10 w-full ${MAX} px-6 lg:px-10 py-28`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
 
-          {/* ── LEFT — 6 cols ─────────────────────────── */}
           <div className="lg:col-span-6">
-
-            {/* Badge */}
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55 }}
               className="inline-flex items-center gap-2.5 px-3.5 py-1.5 mb-8"
-              style={{
-                border: '1px solid rgba(201,168,76,0.2)',
-                background: 'rgba(201,168,76,0.05)',
-                borderRadius: 2,
-              }}>
-              <span style={{
-                display: 'block', width: 5, height: 5,
-                borderRadius: '50%', background: 'var(--gold)', flexShrink: 0,
-                animation: 'pulse 2s infinite',
-              }} />
+              style={{ border: '1px solid rgba(201,168,76,0.2)', background: 'rgba(201,168,76,0.05)', borderRadius: 2 }}>
+              <span style={{ display: 'block', width: 5, height: 5, borderRadius: '50%', background: 'var(--gold)', flexShrink: 0 }} />
               <span className="font-body font-medium"
                 style={{ fontSize: 10, letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(201,168,76,0.75)' }}>
                 Real Estate Lead Generation · Nagpur & India
               </span>
             </motion.div>
 
-            {/* H1 — controlled: clamp 40–64px, not 80px */}
             <motion.h1 initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.95, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="font-serif font-bold mb-6"
-              style={{
-                fontSize: 'clamp(38px, 4.8vw, 64px)',
-                lineHeight: 1.06,
-                letterSpacing: '-0.015em',
-                color: 'var(--ivory)',
-              }}>
+              style={{ fontSize: 'clamp(38px, 4.8vw, 64px)', lineHeight: 1.06, letterSpacing: '-0.015em', color: 'var(--ivory)' }}>
               Turn Property<br />
               Enquiries Into<br />
               <GI dark>Site Visits & Sales.</GI>
             </motion.h1>
 
-            {/* Sub — moderate size */}
             <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.32 }}
               className="font-body mb-9"
-              style={{
-                fontSize: 15, lineHeight: 1.75, maxWidth: 420,
-                color: 'rgba(248,246,242,0.5)',
-              }}>
+              style={{ fontSize: 15, lineHeight: 1.75, maxWidth: 420, color: 'rgba(248,246,242,0.5)' }}>
               Meta Ads · WhatsApp Automation · CRM Pipeline · AI Follow-Up.{' '}
               <span style={{ color: 'rgba(248,246,242,0.72)' }}>{SYSTEM}</span>{' '}
               — built exclusively for developers and plotting companies.
             </motion.p>
 
-            {/* CTAs */}
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.46 }}
               className="flex flex-wrap gap-3 mb-12">
@@ -224,57 +148,36 @@ function Hero() {
               </Link>
             </motion.div>
 
-            {/* Trust metrics — smaller, quieter */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.72 }}
               className="flex gap-8 pt-6"
               style={{ borderTop: '1px solid rgba(201,168,76,0.1)' }}>
               {[
-                { v: '214+',   l: 'Leads / Month'      },
-                { v: '2 min',  l: 'Response Time'      },
-                { v: '47%',    l: 'More Site Visits'   },
-                { v: '₹10Cr+', l: 'Ad Spend Managed'   },
+                { v: '214+',   l: 'Leads / Month'    },
+                { v: '2 min',  l: 'Response Time'    },
+                { v: '47%',    l: 'More Site Visits' },
+                { v: '10Cr+',  l: 'Ad Spend Managed' },
               ].map(({ v, l }) => (
                 <Metric key={l} v={v} l={l} light />
               ))}
             </motion.div>
           </div>
 
-          {/* ── RIGHT — 6 cols, anchored visual ──────── */}
           <motion.div initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.95, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-6 hidden lg:block">
 
-            {/* Central anchor — fixed aspect ratio, not too tall */}
             <div className="relative">
-              
               <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: '5/6' }}>
                 <Image
                   src="/hero-project.webp"
-                  alt="Premium residential township development"
+                  alt="Premium residential township development project"
                   fill
                   className="object-cover object-center"
                   priority
-                  sizes="(max-width: 1024px) 0px, 536px"
+                  sizes="536px"
                 />
-                {/* Bottom gradient overlay */}
                 <div className="absolute inset-0 rounded-xl"
                   style={{ background: 'linear-gradient(180deg, transparent 50%, rgba(7,18,42,0.82) 100%)' }} />
-                {/* Project label */}
-                <div className="absolute bottom-5 left-5 right-5 z-10">
-                  <p style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
-                    color: 'rgba(201,168,76,0.65)', marginBottom: 5 }}>
-                    Featured Project
-                  </p>
-                  <p className="font-serif font-semibold" style={{ fontSize: 18, color: 'var(--ivory)' }}>
-                    Township Development · Nagpur
-                  </p>
-                </div>
-              </div>
-              
-                {/* Subtle bottom gradient */}
-                <div className="absolute inset-0 rounded-xl"
-                  style={{ background: 'linear-gradient(180deg, transparent 50%, rgba(7,18,42,0.82) 100%)' }} />
-                {/* Project label at bottom */}
                 <div className="absolute bottom-5 left-5 right-5 z-10">
                   <p style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(201,168,76,0.65)', marginBottom: 5 }}>
                     Featured Project
@@ -283,20 +186,13 @@ function Hero() {
                     Township Development · Nagpur
                   </p>
                 </div>
-              </Img>
+              </div>
 
-              {/* ── Floating card 1 — top left, orbiting the image ── */}
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
                 className="absolute -left-10 top-10 w-44"
-                style={{
-                  background: 'var(--white)',
-                  borderRadius: 10,
-                  padding: '14px 16px',
-                  boxShadow: '0 4px 24px rgba(7,18,42,0.14)',
-                  border: '1px solid rgba(7,18,42,0.05)',
-                }}>
+                style={{ background: 'var(--white)', borderRadius: 10, padding: '14px 16px', boxShadow: '0 4px 24px rgba(7,18,42,0.14)', border: '1px solid rgba(7,18,42,0.05)' }}>
                 <p className="font-body mb-1.5"
                   style={{ fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--soft)' }}>
                   Live Enquiries Today
@@ -308,30 +204,17 @@ function Hero() {
                 </div>
               </motion.div>
 
-              {/* ── Floating card 2 — right side middle ── */}
               <motion.div
                 animate={{ y: [0, 6, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1.1 }}
-                className="absolute -right-9 top-[38%] w-52"
-                style={{
-                  background: 'var(--white)',
-                  borderRadius: 10,
-                  padding: '14px 16px',
-                  boxShadow: '0 4px 24px rgba(7,18,42,0.14)',
-                  border: '1px solid rgba(7,18,42,0.05)',
-                }}>
+                className="absolute -right-9 w-52"
+                style={{ top: '38%', background: 'var(--white)', borderRadius: 10, padding: '14px 16px', boxShadow: '0 4px 24px rgba(7,18,42,0.14)', border: '1px solid rgba(7,18,42,0.05)' }}>
                 <div className="flex items-center gap-2 mb-2.5">
-                  <div style={{
-                    width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
-                    background: 'rgba(16,185,129,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <MessageCircle style={{ width: 13, height: 13, color: '#10B981' }} />
                   </div>
                   <div>
-                    <p className="font-body font-semibold" style={{ fontSize: 12, color: 'var(--navy)', lineHeight: 1.3 }}>
-                      Auto WhatsApp Sent
-                    </p>
+                    <p className="font-body font-semibold" style={{ fontSize: 12, color: 'var(--navy)', lineHeight: 1.3 }}>Auto WhatsApp Sent</p>
                     <p className="font-body" style={{ fontSize: 11, color: 'var(--soft)' }}>28 sec after enquiry</p>
                   </div>
                 </div>
@@ -340,42 +223,24 @@ function Hero() {
                 </p>
               </motion.div>
 
-              {/* ── Floating card 3 — bottom left, gold ── */}
               <motion.div
                 animate={{ y: [0, -4, 0] }}
                 transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 2.0 }}
                 className="absolute -left-6 bottom-20"
-                style={{
-                  background: 'var(--gold)',
-                  borderRadius: 10,
-                  padding: '12px 16px',
-                  boxShadow: '0 4px 20px rgba(201,168,76,0.22)',
-                  minWidth: 168,
-                }}>
-                <p className="font-body font-medium" style={{ fontSize: 10, color: 'rgba(7,18,42,0.58)', marginBottom: 4 }}>
-                  Site Visits Booked
-                </p>
-                <p className="font-serif font-bold" style={{ fontSize: 22, lineHeight: 1, color: 'var(--navy)' }}>
-                  12 Today
-                </p>
-                <p className="font-body" style={{ fontSize: 10, color: 'rgba(7,18,42,0.48)', marginTop: 3 }}>
-                  Auto-confirmed via WhatsApp
-                </p>
+                style={{ background: 'var(--gold)', borderRadius: 10, padding: '12px 16px', boxShadow: '0 4px 20px rgba(201,168,76,0.22)', minWidth: 168 }}>
+                <p className="font-body font-medium" style={{ fontSize: 10, color: 'rgba(7,18,42,0.58)', marginBottom: 4 }}>Site Visits Booked</p>
+                <p className="font-serif font-bold" style={{ fontSize: 22, lineHeight: 1, color: 'var(--navy)' }}>12 Today</p>
+                <p className="font-body" style={{ fontSize: 10, color: 'rgba(7,18,42,0.48)', marginTop: 3 }}>Auto-confirmed via WhatsApp</p>
               </motion.div>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.6, repeat: Infinity }}
-          style={{
-            width: 18, height: 30, borderRadius: 10,
-            border: '1px solid rgba(201,168,76,0.2)',
-            display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: 4,
-          }}>
+          style={{ width: 18, height: 30, borderRadius: 10, border: '1px solid rgba(201,168,76,0.2)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: 4 }}>
           <div style={{ width: 2, height: 7, borderRadius: 1, background: 'var(--gold)', opacity: 0.6 }} />
         </motion.div>
       </motion.div>
@@ -383,16 +248,13 @@ function Hero() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   2. PAINS — Ivory bg, calm, editorial
-═══════════════════════════════════════════════════════════ */
 const pains = [
-  { icon: Clock,         t: 'Leads wait hours for a response',        d: 'A buyer enquires at 2pm. Your team calls at 6pm. They\'ve already visited a competitor\'s project and are ready to book.' },
-  { icon: AlertTriangle, t: 'Low-quality enquiries waste your team',   d: 'Meta campaigns attract price-shoppers. Your sales team burns hours on leads who can never afford your inventory.' },
-  { icon: MessageCircle, t: 'Enquiries lost across WhatsApp numbers',  d: 'Leads scattered across personal numbers with no tracking, no system, no follow-up protocol. Silent revenue leakage.' },
-  { icon: BarChart3,     t: 'High ad spend, very few site visits',     d: 'Spending ₹50,000/month and getting 3 site visits. The gap between enquiry and visit is where crores disappear.' },
-  { icon: Target,        t: 'No clarity on which campaigns work',      d: 'You don\'t know which project, ad, or area drives the best buyers. Every decision is gut-feel, not live data.' },
-  { icon: Zap,           t: 'Warm leads go cold without nurturing',    d: 'An interested buyer says they\'ll visit next weekend. No follow-up happens. 90 days later they\'ve bought elsewhere.' },
+  { icon: Clock,         t: 'Leads wait hours for a response',       d: 'A buyer enquires at 2pm. Your team calls at 6pm. They\'ve already visited a competitor\'s project and are ready to book.' },
+  { icon: AlertTriangle, t: 'Low-quality enquiries waste your team', d: 'Meta campaigns attract price-shoppers. Your sales team burns hours on leads who can never afford your inventory.' },
+  { icon: MessageCircle, t: 'Enquiries lost across WhatsApp numbers', d: 'Leads scattered across personal numbers with no tracking, no system, no follow-up protocol. Silent revenue leakage.' },
+  { icon: BarChart3,     t: 'High ad spend, very few site visits',   d: 'Spending Rs.50,000/month and getting 3 site visits. The gap between enquiry and visit is where crores disappear.' },
+  { icon: Target,        t: 'No clarity on which campaigns work',    d: 'You don\'t know which project, ad, or area drives the best buyers. Every decision is gut-feel, not live data.' },
+  { icon: Zap,           t: 'Warm leads go cold without nurturing',  d: 'An interested buyer says they\'ll visit next weekend. No follow-up happens. 90 days later they\'ve bought elsewhere.' },
 ]
 
 function Pains() {
@@ -400,8 +262,6 @@ function Pains() {
     <section style={{ background: 'var(--ivory)', ...PY_LG }}>
       <div className={`${MAX} px-6 lg:px-10`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-
-          {/* Sticky left — copy + image */}
           <div className="lg:col-span-4 lg:sticky lg:top-28 self-start">
             <R>
               <Eye>The Reality</Eye>
@@ -413,22 +273,20 @@ function Pains() {
             </R>
             <R d={0.1}>
               <p className="font-body mb-6" style={{ fontSize: 15, lineHeight: 1.75, color: 'var(--muted)', marginTop: 12 }}>
-                These aren't edge cases. They're the daily reality for most developers without a complete growth system.
+                These are not edge cases. They are the daily reality for most developers without a complete growth system.
               </p>
               <div className="p-5 rounded-xl" style={{ background: 'var(--ivory-warm)', border: '1px solid var(--border-light)' }}>
                 <p className="font-body" style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--muted)' }}>
-                  If 3 of these feel familiar, you're losing{' '}
-                  <strong style={{ color: 'var(--navy)' }}>₹15–40 lakhs</strong>{' '}
-                  in potential bookings every quarter — invisibly.
+                  If 3 of these feel familiar, you are losing{' '}
+                  <strong style={{ color: 'var(--navy)' }}>Rs.15-40 lakhs</strong>{' '}
+                  in potential bookings every quarter.
                 </p>
               </div>
             </R>
             <R d={0.15} c="mt-6">
-              <Img label="Sales team managing property enquiries — replace with actual photo" ratio="4/3" />
+              <Img label="Sales team managing property enquiries" ratio="4/3" />
             </R>
           </div>
-
-          {/* Pain cards */}
           <div className="lg:col-span-8 space-y-3">
             {pains.map((p, i) => {
               const Icon = p.icon
@@ -440,8 +298,7 @@ function Pains() {
                       <Icon style={{ width: 16, height: 16, color: 'var(--gold-dim)' }} />
                     </div>
                     <div>
-                      <h3 className="font-body font-semibold mb-1.5"
-                        style={{ color: 'var(--navy)', fontSize: 14 }}>{p.t}</h3>
+                      <h3 className="font-body font-semibold mb-1.5" style={{ color: 'var(--navy)', fontSize: 14 }}>{p.t}</h3>
                       <p className="font-body" style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--muted)' }}>{p.d}</p>
                     </div>
                   </div>
@@ -455,18 +312,15 @@ function Pains() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   3. SYSTEM — Navy, flagship, clean steps
-═══════════════════════════════════════════════════════════ */
 const steps = [
-  { n: '01', t: 'Meta & Google Ads',       s: 'Targeted to active property buyers',   c: '#C9A84C' },
-  { n: '02', t: 'Conversion Landing Page', s: 'Project-specific, mobile-first',        c: '#DFC06E' },
-  { n: '03', t: 'WhatsApp Automation',     s: 'Instant AI reply under 2 minutes',      c: '#34D399' },
-  { n: '04', t: 'Lead Qualification',      s: 'Budget · Timeline · Location',          c: '#60A5FA' },
-  { n: '05', t: 'CRM Pipeline',            s: 'Every lead tracked and assigned',       c: '#C9A84C' },
-  { n: '06', t: 'Site Visit Booking',      s: 'Automated scheduling & reminders',      c: '#DFC06E' },
-  { n: '07', t: 'AI Nurture (90 Days)',    s: 'Follow-up for long-cycle buyers',       c: '#A78BFA' },
-  { n: '08', t: 'Property Booking',        s: 'Token, agreement, confirmed sale',      c: '#34D399' },
+  { n: '01', t: 'Meta & Google Ads',       s: 'Targeted to active property buyers',  c: '#C9A84C' },
+  { n: '02', t: 'Conversion Landing Page', s: 'Project-specific, mobile-first',       c: '#DFC06E' },
+  { n: '03', t: 'WhatsApp Automation',     s: 'Instant AI reply under 2 minutes',     c: '#34D399' },
+  { n: '04', t: 'Lead Qualification',      s: 'Budget · Timeline · Location',         c: '#60A5FA' },
+  { n: '05', t: 'CRM Pipeline',            s: 'Every lead tracked and assigned',      c: '#C9A84C' },
+  { n: '06', t: 'Site Visit Booking',      s: 'Automated scheduling & reminders',     c: '#DFC06E' },
+  { n: '07', t: 'AI Nurture (90 Days)',    s: 'Follow-up for long-cycle buyers',      c: '#A78BFA' },
+  { n: '08', t: 'Property Booking',        s: 'Token, agreement, confirmed sale',     c: '#34D399' },
 ]
 
 function System() {
@@ -474,10 +328,7 @@ function System() {
     <section style={{ background: 'var(--navy)', ...PY_LG, position: 'relative' }}>
       <div className="absolute top-0 left-0 right-0 h-px"
         style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.2), transparent)' }} />
-
       <div className={`${MAX} px-6 lg:px-10`}>
-
-        {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-14">
           <R>
             <Eye light>Our System</Eye>
@@ -485,12 +336,10 @@ function System() {
           </R>
           <R d={0.1} c="lg:flex items-end">
             <p className="font-body" style={{ fontSize: 15, lineHeight: 1.8, color: 'rgba(248,246,242,0.44)' }}>
-              One integrated system — not a collection of isolated services. Every step feeds the next, from the first ad impression to a confirmed property booking.
+              One integrated system where every step feeds the next — from the first ad impression to a confirmed property booking.
             </p>
           </R>
         </div>
-
-        {/* Steps grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
           {steps.map((s, i) => (
             <R key={s.n} d={i * 0.05}>
@@ -510,13 +359,8 @@ function System() {
             </R>
           ))}
         </div>
-
-        {/* Dashboard placeholder — reduced height */}
         <R d={0.25}>
-          <Img
-            label="CRM pipeline / lead dashboard — replace with actual product screenshot"
-            ratio="21/7" dark radius cls="w-full"
-          >
+          <Img label="CRM pipeline dashboard — replace with actual screenshot" ratio="21/7" dark radius cls="w-full">
             <div className="absolute inset-0 rounded-xl flex items-center justify-center"
               style={{ background: 'rgba(7,18,42,0.4)' }}>
               <p className="font-serif italic" style={{ fontSize: 16, color: 'rgba(248,246,242,0.35)' }}>
@@ -525,8 +369,6 @@ function System() {
             </div>
           </Img>
         </R>
-
-        {/* Callout */}
         <R d={0.3}>
           <div className="mt-7 p-7 rounded-xl text-center"
             style={{ background: 'rgba(201,168,76,0.05)', border: '1px solid rgba(201,168,76,0.14)' }}>
@@ -545,18 +387,15 @@ function System() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   4. SERVICES — Ivory, content hierarchy: text > outcomes > image
-═══════════════════════════════════════════════════════════ */
 const svcs = [
   { n: '01', col: '#C9A84C', t: 'Property Lead Generation',
-    d: 'Precision Meta and Google campaigns targeting active property buyers in your project\'s catchment area. Every rupee tracked. CPL benchmarked against your target buyer profile.',
+    d: 'Precision Meta and Google campaigns targeting active property buyers in your project catchment area. Every rupee tracked. CPL benchmarked against your target buyer profile.',
     out: ['Lower cost per qualified enquiry', 'Higher buyer intent traffic', 'Project-specific ad creatives'],
-    img: 'Meta Ads dashboard + property creative — replace with actual screenshot', metric: '₹280–₹450 avg. CPL' },
+    img: 'Meta Ads dashboard + property creative — replace with screenshot', metric: 'Rs.280-450 avg. CPL' },
   { n: '02', col: '#34D399', t: 'WhatsApp Automation & AI Response',
     d: 'Every enquiry receives an automatic WhatsApp reply in under 2 minutes — 24/7. AI qualification captures budget, timeline, and location before your team makes a single call.',
     out: ['2-minute speed-to-lead', '24/7 lead coverage', 'AI-powered qualification'],
-    img: 'WhatsApp AI conversation flow — replace with actual screenshot', metric: '< 2 min response' },
+    img: 'WhatsApp AI conversation flow — replace with screenshot', metric: '< 2 min response' },
   { n: '03', col: '#60A5FA', t: 'CRM & Sales Pipeline',
     d: 'Complete pipeline visibility from first enquiry to booking. Every lead tracked, scored, and assigned. Your sales team sees exactly which leads are hot, warm, or cold.',
     out: ['Real-time pipeline visibility', 'Lead scoring & assignment', 'Zero leads falling through'],
@@ -566,11 +405,11 @@ const svcs = [
     out: ['More confirmed visits', 'Fewer no-shows', 'Post-visit nurture'],
     img: 'Buyers visiting a residential project showflat — replace with actual photo', metric: '+47% site visits' },
   { n: '05', col: '#A78BFA', t: 'Retargeting & Re-Engagement',
-    d: 'Systematically re-engage warm leads who showed interest but didn\'t convert. Layered retargeting across Meta and Google brings buyers back at the right moment.',
+    d: 'Systematically re-engage warm leads who showed interest but did not convert. Layered retargeting across Meta and Google brings buyers back at the right moment.',
     out: ['Re-activate cold leads', 'Lower blended CPL', 'Better overall ad ROI'],
     img: 'Retargeting funnel visualization — replace with actual graphic', metric: '3.2x retargeting ROAS' },
   { n: '06', col: '#C9A84C', t: 'AI Follow-Up & Lead Nurturing',
-    d: '90-day AI nurturing sequences that keep your project top-of-mind throughout a buyer\'s decision journey — converting hesitation into confirmed bookings over time.',
+    d: '90-day AI nurturing sequences that keep your project top-of-mind throughout a buyer decision journey — converting hesitation into confirmed bookings over time.',
     out: ['90-day nurture window', 'Long-cycle buyer conversion', 'Reactivate old leads'],
     img: 'AI automation nurture timeline — replace with actual graphic', metric: '90-day nurture' },
 ]
@@ -579,8 +418,6 @@ function Services() {
   return (
     <section style={{ background: 'var(--ivory)', ...PY_LG }}>
       <div className={`${MAX} px-6 lg:px-10`}>
-
-        {/* Header — text dominates */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
           <R>
             <Eye>Our Services</Eye>
@@ -591,23 +428,18 @@ function Services() {
           </R>
           <R d={0.08} c="max-w-xs md:text-right pb-1">
             <p className="font-body" style={{ fontSize: 13, lineHeight: 1.75, color: 'var(--soft)' }}>
-              Every service is a component of one integrated system — not a standalone offering.
+              Every service is a component of one integrated system.
             </p>
           </R>
         </div>
-
         <div className="space-y-4">
           {svcs.map((s, i) => (
             <R key={s.n} d={i * 0.04}>
               <div className="rounded-xl overflow-hidden card-white">
                 <div className="grid grid-cols-1 lg:grid-cols-5">
-
-                  {/* Image — reduced weight: 2/5 of width, content comes first visually */}
                   <div className="lg:col-span-2 order-last lg:order-first">
                     <Img label={s.img} ratio="16/11" radius={false} cls="h-full" />
                   </div>
-
-                  {/* Content — 3/5 */}
                   <div className="lg:col-span-3 order-first lg:order-last p-7 lg:p-9 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center gap-4 mb-4">
@@ -621,33 +453,21 @@ function Services() {
                           {s.metric}
                         </span>
                       </div>
-
-                      {/* Service title — prominent */}
                       <h3 className="font-serif font-bold mb-3"
                         style={{ fontSize: 'clamp(20px, 2.2vw, 26px)', color: 'var(--navy)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
                         {s.t}
                       </h3>
-
-                      <p className="font-body mb-5"
-                        style={{ fontSize: 13, lineHeight: 1.78, color: 'var(--muted)' }}>
-                        {s.d}
-                      </p>
-
-                      {/* Outcome pills */}
+                      <p className="font-body mb-5" style={{ fontSize: 13, lineHeight: 1.78, color: 'var(--muted)' }}>{s.d}</p>
                       <div className="flex flex-wrap gap-2 mb-5">
                         {s.out.map(o => (
                           <div key={o} className="flex items-center gap-1.5 font-body font-medium"
-                            style={{
-                              fontSize: 11, padding: '4px 10px', borderRadius: 20,
-                              background: `${s.col}0e`, color: s.col, border: `1px solid ${s.col}1e`,
-                            }}>
+                            style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, background: `${s.col}0e`, color: s.col, border: `1px solid ${s.col}1e` }}>
                             <CheckCircle style={{ width: 10, height: 10 }} />
                             {o}
                           </div>
                         ))}
                       </div>
                     </div>
-
                     <Link href="/contact" data-cursor
                       className="inline-flex items-center gap-2 font-body font-semibold ul-gold w-fit"
                       style={{ fontSize: 13, color: 'var(--navy)' }}>
@@ -664,15 +484,12 @@ function Services() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   5. WHY US — Navy, clean differentiators, local image
-═══════════════════════════════════════════════════════════ */
 const diffs = [
-  { icon: Zap,           stat: '2 min', t: 'Speed-to-Lead Advantage',       d: 'Our system replies to every property enquiry in under 2 minutes — before any competitor reacts. First response wins the buyer.' },
-  { icon: Building2,     stat: '100%',  t: 'Real Estate Specialists Only',   d: 'We work exclusively with developers and plotting companies. We understand site visit funnels, RERA, and buyer psychology — not generic marketing.' },
-  { icon: BarChart3,     stat: 'Live',  t: 'Full-Funnel Revenue Visibility', d: 'Cost per enquiry, site visit rate, nurture conversion — all in a live dashboard. Every decision is backed by real data, never gut-feel.' },
-  { icon: MessageCircle, stat: '90d',   t: 'AI-Powered Lead Nurturing',      d: 'Property decisions take weeks or months. Our 90-day AI sequences keep your project present throughout the buyer\'s decision journey.' },
-  { icon: Shield,        stat: 'Zero',  t: 'No Lock-In Contracts',           d: 'We earn your business every month by delivering measurable results. No 12-month lock-ins. Pure performance-based partnership.' },
+  { icon: Zap,           stat: '2 min', t: 'Speed-to-Lead Advantage',       d: 'Our system replies to every property enquiry in under 2 minutes before any competitor reacts. First response wins the buyer.' },
+  { icon: Building2,     stat: '100%',  t: 'Real Estate Specialists Only',   d: 'We work exclusively with developers and plotting companies. We understand site visit funnels, RERA, and buyer psychology.' },
+  { icon: BarChart3,     stat: 'Live',  t: 'Full-Funnel Revenue Visibility', d: 'Cost per enquiry, site visit rate, nurture conversion — all in a live dashboard. Every decision backed by real data.' },
+  { icon: MessageCircle, stat: '90d',   t: 'AI-Powered Lead Nurturing',      d: 'Property decisions take weeks or months. Our 90-day AI sequences keep your project present throughout the buyer journey.' },
+  { icon: Shield,        stat: 'Zero',  t: 'No Lock-In Contracts',           d: 'We earn your business every month by delivering measurable results. No 12-month lock-ins. Pure performance partnership.' },
   { icon: Target,        stat: 'ROI',   t: 'Revenue Partner, Not Agency',    d: 'We measure our success by your property bookings and site visits — not impressions or follower counts.' },
 ]
 
@@ -680,13 +497,12 @@ function WhyUs() {
   return (
     <section style={{ background: 'var(--navy)', ...PY_LG, position: 'relative' }}>
       <div className={`${MAX} px-6 lg:px-10`}>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
           <R>
             <Eye light>Why Us</Eye>
             <H2 light size="lg">
-              We're Not an Agency.<br />
-              <GI dark>We're Your Revenue Partner.</GI>
+              We are Not an Agency.<br />
+              <GI dark>We are Your Revenue Partner.</GI>
             </H2>
           </R>
           <R d={0.08} c="lg:flex items-end">
@@ -695,8 +511,6 @@ function WhyUs() {
             </p>
           </R>
         </div>
-
-        {/* Diff grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-12">
           {diffs.map((d, i) => {
             const Icon = d.icon
@@ -717,8 +531,6 @@ function WhyUs() {
             )
           })}
         </div>
-
-        {/* Nagpur local section */}
         <R d={0.25}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 p-7 rounded-xl"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(201,168,76,0.1)' }}>
@@ -746,23 +558,16 @@ function WhyUs() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   6. TRUST / FOUNDER — Ivory-warm, consultative, warm
-═══════════════════════════════════════════════════════════ */
 function Trust() {
   return (
     <section style={{ background: 'var(--ivory-warm)', ...PY_LG }}>
       <div className={`${MAX} px-6 lg:px-10`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-
-          {/* Left — founder image */}
           <div className="lg:col-span-5">
             <R>
               <Img label="Founder / team photo — replace with actual professional photo" ratio="4/5" />
             </R>
           </div>
-
-          {/* Right — trust copy */}
           <div className="lg:col-span-7">
             <R>
               <Eye>Why Developers Work With Us</Eye>
@@ -773,10 +578,9 @@ function Trust() {
             </R>
             <R d={0.1}>
               <p className="font-body mb-7 mt-2" style={{ fontSize: 15, lineHeight: 1.8, color: 'var(--muted)' }}>
-                Real estate in India is relationship-driven. Buyers need trust. Developers need reliable partners. We built CommandGrowth specifically because developers were losing crores to slow response times, poor lead quality, and zero follow-up systems.
+                Real estate in India is relationship-driven. Buyers need trust. Developers need reliable partners. We built CommandGrowth because developers were losing crores to slow response times, poor lead quality, and zero follow-up systems.
               </p>
             </R>
-
             <div className="space-y-3 mb-9">
               {[
                 { icon: Target,    t: 'Systems-First Philosophy',   d: 'We build complete lead acquisition and conversion systems — not isolated ad campaigns. Every component works together as one engine.' },
@@ -800,7 +604,6 @@ function Trust() {
                 )
               })}
             </div>
-
             <R d={0.35}>
               <div className="flex flex-wrap gap-3">
                 <Link href="/contact" data-cursor className="btn-gold">
@@ -819,9 +622,6 @@ function Trust() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   7. CASE STUDIES — Ivory, editorial, data-driven
-═══════════════════════════════════════════════════════════ */
 const cases = [
   {
     project: 'Residential Township Project', location: 'Nagpur, Maharashtra',
@@ -832,7 +632,7 @@ const cases = [
     metrics: [
       { l: 'Qualified Enquiries', v: '214',  d: '+180%' },
       { l: 'Site Visits Booked',  v: '38',   d: '+47%'  },
-      { l: 'Cost Per Enquiry',    v: '₹320', d: '-62%'  },
+      { l: 'Cost Per Enquiry',    v: 'Rs.320', d: '-62%' },
     ],
   },
   {
@@ -854,7 +654,7 @@ const cases = [
     col: '#A78BFA',
     img: 'Premium villa exterior / luxury residential project — replace with actual photo',
     metrics: [
-      { l: 'Total Ad Spend',     v: '₹1.8L', d: '60 days' },
+      { l: 'Total Ad Spend',     v: 'Rs.1.8L', d: '60 days' },
       { l: 'Bookings Confirmed', v: '12',    d: 'Units'   },
       { l: 'ROI on Ad Spend',    v: '8.4x',  d: 'Verified'},
     ],
@@ -875,11 +675,10 @@ function CaseStudies() {
           </R>
           <R d={0.08} c="max-w-xs md:text-right pb-1">
             <p className="font-body" style={{ fontSize: 12, color: 'var(--soft)', lineHeight: 1.7 }}>
-              Representative results. Actual project data shared during your free growth audit.
+              Representative results. Actual data shared during your free growth audit.
             </p>
           </R>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {cases.map((c, i) => (
             <R key={c.project} d={i * 0.08}>
@@ -887,13 +686,11 @@ function CaseStudies() {
                 <Img label={c.img} ratio="16/9" radius={false}>
                   <div className="absolute top-3.5 left-3.5 z-20">
                     <span className="font-body font-semibold"
-                      style={{ fontSize: 10, padding: '4px 10px', borderRadius: 20,
-                        background: 'rgba(255,255,255,0.92)', color: c.col }}>
+                      style={{ fontSize: 10, padding: '4px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.92)', color: c.col }}>
                       {c.tag}
                     </span>
                   </div>
                 </Img>
-
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <MapPin style={{ width: 11, height: 11, color: 'var(--soft)' }} />
@@ -901,12 +698,10 @@ function CaseStudies() {
                       {c.project} · {c.location}
                     </span>
                   </div>
-                  <p className="font-serif font-semibold mb-5"
-                    style={{ fontSize: 17, color: 'var(--navy)', lineHeight: 1.35 }}>
+                  <p className="font-serif font-semibold mb-5" style={{ fontSize: 17, color: 'var(--navy)', lineHeight: 1.35 }}>
                     "{c.result}"
                   </p>
-                  <div className="grid grid-cols-3 gap-2.5 pt-5"
-                    style={{ borderTop: '1px solid var(--border-light)' }}>
+                  <div className="grid grid-cols-3 gap-2.5 pt-5" style={{ borderTop: '1px solid var(--border-light)' }}>
                     {c.metrics.map(m => (
                       <div key={m.l} className="text-center">
                         <div className="font-serif font-bold mb-0.5" style={{ fontSize: 19, color: c.col }}>{m.v}</div>
@@ -925,23 +720,20 @@ function CaseStudies() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   8. FAQ — Ivory-warm, calm, editorial
-═══════════════════════════════════════════════════════════ */
 const faqs = [
   { q: 'Do you work with all types of real estate projects?', a: 'We work exclusively with real estate — residential developments, plotting schemes, villa projects, and townships. Our entire system is built around property sales funnels, RERA-compliant marketing, and Indian buyer psychology.' },
-  { q: 'How quickly will we see more qualified enquiries?', a: 'Most developers see meaningful improvement in enquiry quality and volume within 2–3 weeks. Full system results — site visit conversion and nurture performance — show strong improvement by 45–60 days.' },
+  { q: 'How quickly will we see more qualified enquiries?', a: 'Most developers see meaningful improvement within 2-3 weeks. Full system results — site visit conversion and nurture performance — show strong improvement by 45-60 days.' },
   { q: 'What makes you different from a regular digital marketing agency?', a: 'We exclusively serve real estate. We understand site visit funnels, project inventory positioning, buyer decision timelines, and how to create WhatsApp automation that converts — not just generates leads.' },
   { q: 'Do we need an existing CRM?', a: 'No. We set up and manage the entire CRM pipeline for your team. If you already use a CRM, we integrate with it seamlessly and train your sales team on the dashboards.' },
-  { q: 'What is the recommended monthly ad budget?', a: 'We recommend a minimum of ₹40,000–₹60,000/month in ad spend to generate meaningful qualified volume. We optimize every rupee across Meta and Google to minimize cost-per-qualified-enquiry.' },
-  { q: 'How does the WhatsApp automation work?', a: 'The moment a lead submits a form, our system sends an automatic WhatsApp message in 30–60 seconds. AI then qualifies them — capturing budget, timeline, preferred location — and assigns them to the right salesperson before your team makes a single call.' },
+  { q: 'What is the recommended monthly ad budget?', a: 'We recommend a minimum of Rs.40,000-60,000 per month in ad spend to generate meaningful qualified volume. We optimize every rupee across Meta and Google to minimize cost-per-qualified-enquiry.' },
+  { q: 'How does the WhatsApp automation work?', a: 'The moment a lead submits a form, our system sends an automatic WhatsApp message in 30-60 seconds. AI then qualifies them — capturing budget, timeline, preferred location — and assigns them to the right salesperson before your team makes a single call.' },
 ]
 
 function FAQ() {
   const [open, setOpen] = useState<number | null>(null)
   return (
     <section style={{ background: 'var(--ivory-warm)', ...PY }}>
-      <div className={`${MAX} px-6 lg:px-10`} style={{ maxWidth: 760, margin: '0 auto' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto' }} className="px-6 lg:px-10">
         <R c="text-center mb-12">
           <Eye>FAQ</Eye>
           <H2 center size="md">
@@ -956,12 +748,11 @@ function FAQ() {
                 style={{
                   background: 'var(--white)',
                   border: open === i ? '1px solid rgba(201,168,76,0.26)' : '1px solid var(--border-light)',
-                  boxShadow: open === i ? '0 4px 18px rgba(201,168,76,0.07)' : 'var(--shadow-xs)',
+                  boxShadow: open === i ? '0 4px 18px rgba(201,168,76,0.07)' : '0 1px 4px rgba(7,18,42,0.06)',
                 }}>
                 <button className="w-full flex items-center justify-between p-5 text-left" data-cursor
                   onClick={() => setOpen(open === i ? null : i)}>
-                  <span className="font-body font-medium pr-4"
-                    style={{ color: 'var(--navy)', fontSize: 14, lineHeight: 1.45 }}>{f.q}</span>
+                  <span className="font-body font-medium pr-4" style={{ color: 'var(--navy)', fontSize: 14, lineHeight: 1.45 }}>{f.q}</span>
                   <motion.div animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: 0.3 }} className="flex-shrink-0">
                     <ChevronDown style={{ width: 16, height: 16, color: 'var(--gold-dim)' }} />
                   </motion.div>
@@ -971,8 +762,7 @@ function FAQ() {
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
                       <div className="px-5 pb-5 font-body"
-                        style={{ fontSize: 13, lineHeight: 1.78, color: 'var(--muted)',
-                          borderTop: '1px solid var(--border-light)', paddingTop: 14 }}>
+                        style={{ fontSize: 13, lineHeight: 1.78, color: 'var(--muted)', borderTop: '1px solid var(--border-light)', paddingTop: 14 }}>
                         {f.a}
                       </div>
                     </motion.div>
@@ -987,25 +777,17 @@ function FAQ() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   9. CTA — Navy, split layout, consultative
-═══════════════════════════════════════════════════════════ */
 function CTA() {
   return (
     <section style={{ background: 'var(--navy)' }}>
       <div className="grid grid-cols-1 lg:grid-cols-2" style={{ minHeight: 580 }}>
-        {/* Image */}
         <div className="relative min-h-64 lg:min-h-full">
-          <Img
-            label="Developer consultation / architectural walkthrough — replace with actual photo"
-            ratio="auto" dark radius={false} cls="absolute inset-0 w-full h-full"
-          >
+          <Img label="Developer consultation / architectural walkthrough — replace with actual photo"
+            ratio="auto" dark radius={false} cls="absolute inset-0 w-full h-full">
             <div className="absolute inset-0"
               style={{ background: 'linear-gradient(90deg, transparent 55%, rgba(7,18,42,0.55) 100%)' }} />
           </Img>
         </div>
-
-        {/* Copy */}
         <div className="flex flex-col justify-center px-10 lg:px-14 py-14">
           <R>
             <Eye light>Book Your Audit</Eye>
@@ -1015,9 +797,8 @@ function CTA() {
             </H2>
             <p className="font-body mt-4 mb-9"
               style={{ fontSize: 15, lineHeight: 1.8, color: 'rgba(248,246,242,0.46)', maxWidth: 420 }}>
-              Book a free 30-minute Growth Audit. We'll analyse your current lead generation, identify where buyers are dropping off, and show you exactly how many more qualified enquiries you could be generating monthly.
+              Book a free 30-minute Growth Audit. We will analyse your current lead generation, identify where buyers are dropping off, and show you exactly how many more qualified enquiries you could be generating monthly.
             </p>
-
             <div className="flex flex-col sm:flex-row gap-3 mb-9">
               <Link href="/contact" data-cursor className="btn-gold">
                 <span>Book Free Growth Audit</span>
@@ -1028,17 +809,14 @@ function CTA() {
                 <span>Chat on WhatsApp</span>
               </a>
             </div>
-
-            {/* Trust signals */}
             <div className="grid grid-cols-2 gap-2 pt-7 mb-6"
               style={{ borderTop: '1px solid rgba(201,168,76,0.1)' }}>
-              {['✓  No lock-in contracts', '✓  Real estate specialists',
-                '✓  Results in 30 days',   '✓  Based in Nagpur'].map(t => (
-                <span key={t} className="font-body" style={{ fontSize: 12, color: 'rgba(248,246,242,0.3)' }}>{t}</span>
+              {['No lock-in contracts', 'Real estate specialists', 'Results in 30 days', 'Based in Nagpur'].map(t => (
+                <span key={t} className="font-body" style={{ fontSize: 12, color: 'rgba(248,246,242,0.3)' }}>
+                  {'\u2713'}  {t}
+                </span>
               ))}
             </div>
-
-            {/* Contact */}
             <div className="flex gap-5">
               <a href="tel:+91XXXXXXXXXX" data-cursor className="flex items-center gap-1.5 font-body ul-gold"
                 style={{ fontSize: 12, color: 'rgba(248,246,242,0.3)' }}>
@@ -1056,7 +834,6 @@ function CTA() {
   )
 }
 
-/* ─── Page assembly ─────────────────────────────────────── */
 export default function HomePage() {
   return (
     <>
