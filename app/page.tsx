@@ -284,7 +284,15 @@ function Pains() {
               </div>
             </R>
             <R d={0.15} c="mt-6">
-              <Img label="Sales team managing property enquiries" ratio="4/3" />
+              <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: '4/3' }}>
+                <Image
+                  src="/sales-team.webp"
+                  alt="Sales team managing property enquiries"
+                  fill
+                  className="object-cover object-center"
+                  sizes="356px"
+                />
+              </div>
             </R>
           </div>
           <div className="lg:col-span-8 space-y-3">
