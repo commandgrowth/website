@@ -438,7 +438,19 @@ function Services() {
               <div className="rounded-xl overflow-hidden card-white">
                 <div className="grid grid-cols-1 lg:grid-cols-5">
                   <div className="lg:col-span-2 order-last lg:order-first">
-                    <Img label={s.img} ratio="16/11" radius={false} cls="h-full" />
+                    {s.n === '02' ? (
+                      <div className="relative h-full overflow-hidden" style={{ minHeight: 200 }}>
+                        <Image
+                          src="/whatsapp-automation.png"
+                          alt="WhatsApp AI automation conversation flow"
+                          fill
+                          className="object-cover object-top"
+                          sizes="428px"
+                        />
+                      </div>
+                    ) : (
+                      <Img label={s.img} ratio="16/11" radius={false} cls="h-full" />
+                    )}
                   </div>
                   <div className="lg:col-span-3 order-first lg:order-last p-7 lg:p-9 flex flex-col justify-between">
                     <div>
