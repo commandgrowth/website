@@ -367,16 +367,23 @@ function System() {
             </R>
           ))}
         </div>
+
         <R d={0.25}>
-          <Img label="CRM pipeline dashboard — replace with actual screenshot" ratio="21/7" dark radius cls="w-full">
-            <div className="absolute inset-0 rounded-xl flex items-center justify-center"
-              style={{ background: 'rgba(7,18,42,0.4)' }}>
-              <p className="font-serif italic" style={{ fontSize: 16, color: 'rgba(248,246,242,0.35)' }}>
-                CRM Dashboard — Replace with Screenshot
-              </p>
-            </div>
-          </Img>
+          <div className="relative w-full overflow-hidden rounded-xl"
+            style={{ aspectRatio: '21/7' }}>
+            <Image
+              src="/crm-dashboard.png"
+              alt="CRM pipeline dashboard showing property lead stages"
+              fill
+              className="object-cover object-top"
+              sizes="1072px"
+            />
+            {/* Dark overlay so the section text above stays readable */}
+            <div className="absolute inset-0 rounded-xl"
+              style={{ background: 'rgba(7,18,42,0.35)' }} />
+          </div>
         </R>
+
         <R d={0.3}>
           <div className="mt-7 p-7 rounded-xl text-center"
             style={{ background: 'rgba(201,168,76,0.05)', border: '1px solid rgba(201,168,76,0.14)' }}>
