@@ -592,9 +592,19 @@ function Trust() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           <div className="lg:col-span-5">
             <R>
-              <Img label="Founder / team photo — replace with actual professional photo" ratio="4/5" />
+              <div className="relative w-full overflow-hidden rounded-xl"
+                style={{ aspectRatio: '4/5' }}>
+                <Image
+                  src="/founder.webp"
+                  alt="CommandGrowth founder — real estate growth specialist"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 1024px) 100vw, 416px"
+                />
+              </div>
             </R>
           </div>
+
           <div className="lg:col-span-7">
             <R>
               <Eye>Why Developers Work With Us</Eye>
